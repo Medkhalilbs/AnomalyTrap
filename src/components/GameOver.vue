@@ -8,8 +8,8 @@
           <span class="value">{{ score }}</span>
         </div>
         <div class="stat-item">
-          <span class="label">Best</span>
-          <span class="value">{{ highscore }}</span>
+          <span class="label">IQ</span>
+          <span class="value">{{ Math.round($props.highscore * 2.5 + 100) }}</span> 
         </div>
       </div>
       

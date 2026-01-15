@@ -6,6 +6,11 @@ export const useGameStore = defineStore('game', {
     state: () => ({
         score: 0,
         highscore: 0,
+        estimatedIQ: 100,
+        lives: 3,
+        hints: 1,
+        isHintActive: false,
+        outlierIndex: -1,
         currentItems: [] as LogicItemData[],
         isGameOver: false,
         lastCorrect: false,
@@ -18,6 +23,7 @@ export const useGameStore = defineStore('game', {
             this.engine = new GameEngine(
                 (result: RuleResult) => {
                     this.currentItems = result.items;
+                    this.outlierIndex = result.outlierIndex;
                 },
                 (finalScore: number) => {
                     this.score = finalScore;
@@ -26,6 +32,13 @@ export const useGameStore = defineStore('game', {
                 (newScore: number) => {
                     this.score = newScore;
                     this.highscore = Math.max(this.highscore, this.engine?.getHighscore() || 0);
+                    this.estimatedIQ = this.engine?.getEstimatedIQ() || 100;
+                },
+                (lives: number) => {
+                    this.lives = lives;
+                },
+                (hints: number) => {
+                    this.hints = hints;
                 }
             );
             this.highscore = this.engine.getHighscore();
@@ -42,14 +55,22 @@ export const useGameStore = defineStore('game', {
                 setTimeout(() => {
                     this.lastCorrect = false;
                 }, 500);
-            } else {
-                this.isGameOver = true;
             }
         },
 
         restart() {
             this.isGameOver = false;
             this.engine?.start();
+        },
+
+        useHint() {
+            if (this.isGameOver || this.hints <= 0 || this.isHintActive) return;
+
+            this.hints--;
+            this.isHintActive = true;
+            setTimeout(() => {
+                this.isHintActive = false;
+            }, 1000);
         }
     },
 });

@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { LogicItemData, ShapeType } from '../game/rules/Rule';
+import type { LogicItemData, ShapeType } from '../game/rules/Rule';
 
 const props = defineProps<{
   item: LogicItemData;
