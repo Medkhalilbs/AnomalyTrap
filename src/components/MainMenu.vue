@@ -34,14 +34,15 @@
     </div>
 
     <div class="menu-actions">
-      <button class="play-button" @click="store.startGame()">
-        START GAME
+      <button class="play-button" @click="showModeSelector = true">
+        SELECT MODE
       </button>
       <button class="tutorial-button" @click="showTutorial = true">
         HOW TO PLAY
       </button>
     </div>
 
+    <ModeSelector v-if="showModeSelector" @close="showModeSelector = false" />
     <TutorialOverlay v-if="showTutorial" @close="showTutorial = false" />
   </div>
 </template>
@@ -50,9 +51,11 @@
 import { ref } from 'vue';
 import { useGameStore } from '../store/gameStore';
 import TutorialOverlay from './TutorialOverlay.vue';
+import ModeSelector from './ModeSelector.vue';
 
 const store = useGameStore();
 const showTutorial = ref(false);
+const showModeSelector = ref(false);
 </script>
 
 <style scoped>

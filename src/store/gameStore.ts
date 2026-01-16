@@ -3,9 +3,11 @@ import { GameEngine } from '../game/engine/GameEngine';
 import type { RuleResult, LogicItemData } from '../game/rules/Rule';
 import { getThemeForScore, themes, type Theme } from '../utils/themes';
 import { sounds } from '../utils/sounds';
+import { GameMode } from '../types/modes';
 
 export const GameState = {
     MENU: 'MENU',
+    MODE_SELECT: 'MODE_SELECT',
     PLAYING: 'PLAYING',
     GAMEOVER: 'GAMEOVER'
 } as const;
@@ -23,6 +25,7 @@ export interface Achievement {
 export const useGameStore = defineStore('game', {
     state: () => ({
         gameState: GameState.MENU as GameStateValue,
+        currentMode: GameMode.ANOMALY_HUNT,
         score: 0,
         highscore: 0,
         estimatedIQ: 100,
