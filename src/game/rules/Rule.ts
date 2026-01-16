@@ -2,13 +2,19 @@ export type ShapeType = 'circle' | 'square' | 'triangle' | 'pentagon' | 'hexagon
 
 export interface LogicItemData {
     id: string;
-    value: number;
-    color: string;
     shape: ShapeType;
-    rotation: number; // in degrees
-    sides: number;
-    opacity: number;
+    color: string;
+    rotation: number;
     scale: number;
+    opacity: number;
+    strokeWidth: number;
+    hasInnerDot: boolean;
+    isHollow: boolean;
+    animationType: 'none' | 'pulse' | 'float' | 'shake' | 'glitch' | 'rotate';
+    animationSpeed: number;
+    innerShape?: ShapeType | 'none';
+    innerColor?: string;
+    secondaryColor?: string; // For "Bicolor" logic
 }
 
 export interface RuleResult {

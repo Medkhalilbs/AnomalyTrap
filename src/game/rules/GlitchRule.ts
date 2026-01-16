@@ -1,47 +1,38 @@
 import type { GameRule, RuleResult, LogicItemData } from './Rule';
 import { getRandomInt, getRandomElement } from '../../utils/random';
 
-const COLORS = [
-    '#3498db', // Blue
-    '#e74c3c', // Red
-    '#2ecc71', // Green
-    '#f1c40f', // Yellow
-    '#9b59b6', // Purple
-    '#e67e22', // Orange
-];
-
-export class ColorRule implements GameRule {
-    name = 'Color Logic';
-    description = 'Logic based on color anomalies.';
+export class GlitchRule implements GameRule {
+    name = 'Glitch Logic';
+    description = 'High-stakes mode where one item flickers/distorts.';
 
     generate(_difficulty: number, count?: number): RuleResult {
         const itemCount = count || getRandomInt(5, 7);
         const items: LogicItemData[] = [];
         const outlierIndex = getRandomInt(0, itemCount - 1);
 
-        const baseColor = getRandomElement(COLORS);
-        const outlierColor = getRandomElement(COLORS.filter(c => c !== baseColor));
+        const baseShape = getRandomElement(['polygon', 'star', 'hexagon'] as any) || 'square';
+        const baseColor = '#e74c3c';
 
         for (let i = 0; i < itemCount; i++) {
             items.push({
                 id: i.toString(),
-                shape: 'circle',
-                color: i === outlierIndex ? outlierColor : baseColor,
+                shape: baseShape as any,
+                color: baseColor,
                 rotation: 0,
                 scale: 1,
                 opacity: 1,
                 strokeWidth: 4,
                 hasInnerDot: false,
                 isHollow: false,
-                animationType: 'none',
-                animationSpeed: 0
+                animationType: i === outlierIndex ? 'glitch' : 'none',
+                animationSpeed: i === outlierIndex ? 0.5 : 0
             });
         }
 
         return {
             items,
             outlierIndex,
-            ruleDescription: 'Find the different color',
+            ruleDescription: 'Find the Glitch',
         };
     }
 }

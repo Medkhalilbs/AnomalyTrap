@@ -12,8 +12,8 @@ export class LevelManager {
 
     nextLevel(): RuleResult {
         this.currentLevel++;
-        this.lastResult = this.generator.generate(this.currentLevel);
-        return this.lastResult;
+        this.lastResult = this.generator.generate(this.currentLevel, this.currentLevel - 1);
+        return this.lastResult as RuleResult;
     }
 
     getCurrentLevel(): number {
@@ -27,7 +27,7 @@ export class LevelManager {
 
     reset(): RuleResult {
         this.currentLevel = 1;
-        this.lastResult = this.generator.generate(this.currentLevel);
-        return this.lastResult;
+        this.lastResult = this.generator.generate(this.currentLevel, this.currentLevel - 1);
+        return this.lastResult as RuleResult;
     }
 }

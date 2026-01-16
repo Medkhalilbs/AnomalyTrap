@@ -36,6 +36,8 @@ export const useGameStore = defineStore('game', {
         engine: null as GameEngine | null,
         levelText: 'Level 1',
         currentTheme: themes[0] as Theme,
+        combo: 0,
+        isShaking: false,
         achievements: [
             { id: 'first_win', name: 'Fresh Start', description: 'Complete level 1', unlocked: false, icon: '🌱' },
             { id: 'boss_slayer', name: 'Boss Buster', description: 'Beat your first Boss Level', unlocked: false, icon: '⚔️' },
@@ -94,12 +96,24 @@ export const useGameStore = defineStore('game', {
             if (success) {
                 sounds.playSuccess();
                 this.lastCorrect = true;
+                this.combo++;
+
+                // Extra score based on combo
+                if (this.combo > 1) {
+                    this.score += (this.combo - 1) * 2;
+                }
+
                 setTimeout(() => {
                     this.lastCorrect = false;
                 }, 500);
             } else {
                 sounds.playError();
+                this.combo = 0;
+                this.isShaking = true;
                 if (window.navigator.vibrate) window.navigator.vibrate(100);
+                setTimeout(() => {
+                    this.isShaking = false;
+                }, 400);
             }
         },
 

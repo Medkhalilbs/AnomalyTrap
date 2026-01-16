@@ -1,5 +1,8 @@
 <template>
-  <div class="game-board-container">
+  <div 
+    class="game-board-container" 
+    :class="{ 'shake-screen': store.isShaking }"
+  >
     <div class="game-header">
       <button class="exit-button" @click="store.goToMenu()">
         <span>🏠</span>
@@ -31,7 +34,14 @@
       <div class="level-indicator" :class="{ 'boss-text': store.levelText.includes('BOSS') }">
         {{ store.levelText }}
       </div>
-      <div class="current-score">{{ store.score }}</div>
+      <div class="score-row">
+        <div class="current-score">{{ store.score }}</div>
+        <Transition name="pop">
+          <div v-if="store.combo > 1" class="combo-badge" :key="store.combo">
+            x{{ store.combo }}
+          </div>
+        </Transition>
+      </div>
     </div>
     
     <div class="grid-container">
@@ -40,7 +50,8 @@
           v-for="(item, index) in store.currentItems" 
           :key="item.id || index" 
           :item="item"
-          :class="{ 'is-outlier': index === store.outlierIndex, 'is-decoy': index !== store.outlierIndex && store.isHintActive }"
+          :is-outlier="index === store.outlierIndex"
+          :is-decoy="index !== store.outlierIndex && store.isHintActive"
           @tap="handleTap(index)"
         />
       </TransitionGroup>
@@ -73,6 +84,18 @@ function handleTap(index: number) {
   justify-content: space-between;
   padding: 10px 0;
   box-sizing: border-box;
+  transition: background-color 0.3s;
+}
+
+.shake-screen {
+  animation: screen-shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes screen-shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
 .game-header {
@@ -189,6 +212,15 @@ function handleTap(index: number) {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  position: relative;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  min-height: 80px;
 }
 
 .level-indicator {
@@ -217,6 +249,16 @@ function handleTap(index: number) {
   font-weight: 800;
   color: var(--secondary-color);
   line-height: 1;
+}
+
+.combo-badge {
+  background: var(--accent-color);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 900;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.1);
 }
 
 .grid-container {
@@ -258,6 +300,18 @@ function handleTap(index: number) {
   transition: transform 0.5s ease;
 }
 
+.pop-enter-active {
+  animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.pop-leave-active {
+  animation: pop-in 0.2s reverse ease-in;
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
 .is-decoy {
   opacity: 0.2 !important;
   filter: blur(2px);
@@ -270,8 +324,8 @@ function handleTap(index: number) {
 }
 
 .hint-active .is-outlier {
-  transform: scale(1.1);
-  filter: drop-shadow(0 0 10px #f1c40f);
+  transform: scale(1.15) !important;
+  filter: drop-shadow(0 0 15px var(--accent-color));
 }
 
 @media (max-width: 350px) {

@@ -7,26 +7,37 @@ const COLORS = [
     '#2ecc71', // Green
     '#f1c40f', // Yellow
     '#9b59b6', // Purple
-    '#e67e22', // Orange
 ];
 
-export class ColorRule implements GameRule {
-    name = 'Color Logic';
-    description = 'Logic based on color anomalies.';
+export class StroopRule implements GameRule {
+    name = 'Visual Stroop';
+    description = 'Color contradiction/swap anomalies.';
 
     generate(_difficulty: number, count?: number): RuleResult {
         const itemCount = count || getRandomInt(5, 7);
         const items: LogicItemData[] = [];
         const outlierIndex = getRandomInt(0, itemCount - 1);
 
-        const baseColor = getRandomElement(COLORS);
-        const outlierColor = getRandomElement(COLORS.filter(c => c !== baseColor));
+        const colorA = getRandomElement(COLORS);
+        const colorB = getRandomElement(COLORS.filter(c => c !== colorA));
+
+        const baseShape = getRandomElement(['square', 'hexagon', 'pentagon'] as const);
 
         for (let i = 0; i < itemCount; i++) {
+            let outerColor = colorA;
+            let secondaryColor = colorB;
+
+            if (i === outlierIndex) {
+                // The "Brain Fuck" swap
+                outerColor = colorB;
+                secondaryColor = colorA;
+            }
+
             items.push({
                 id: i.toString(),
-                shape: 'circle',
-                color: i === outlierIndex ? outlierColor : baseColor,
+                shape: baseShape,
+                color: outerColor,
+                secondaryColor,
                 rotation: 0,
                 scale: 1,
                 opacity: 1,
@@ -41,7 +52,7 @@ export class ColorRule implements GameRule {
         return {
             items,
             outlierIndex,
-            ruleDescription: 'Find the different color',
+            ruleDescription: 'Find the Inversion',
         };
     }
 }
