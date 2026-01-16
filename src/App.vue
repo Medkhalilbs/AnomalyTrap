@@ -4,7 +4,13 @@
       <MainMenu v-if="store.gameState === GameState.MENU" />
     </Transition>
 
-    <GameBoard v-if="store.gameState !== GameState.MENU" />
+    <!-- Route to different game modes based on currentMode -->
+    <template v-if="store.gameState === GameState.PLAYING">
+      <GameBoard v-if="store.currentMode === GameMode.ANOMALY_HUNT" />
+      <SequenceMode v-else-if="store.currentMode === GameMode.SEQUENCE" />
+      <WordTrapMode v-else-if="store.currentMode === GameMode.WORD_TRAP" />
+      <!-- Other modes will be added here -->
+    </template>
 
     <Transition name="slide-up">
       <GameOver 
@@ -22,7 +28,10 @@ import { onMounted, watch } from 'vue';
 import MainMenu from './components/MainMenu.vue';
 import GameBoard from './components/GameBoard.vue';
 import GameOver from './components/GameOver.vue';
+import SequenceMode from './modes/sequence/SequenceMode.vue';
+import WordTrapMode from './modes/word/WordTrapMode.vue';
 import { useGameStore, GameState } from './store/gameStore';
+import { GameMode } from './types/modes';
 
 const store = useGameStore();
 

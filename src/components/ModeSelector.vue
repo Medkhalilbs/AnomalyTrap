@@ -15,6 +15,7 @@
           <h3 class="mode-name">{{ mode.name }}</h3>
           <p class="mode-description">{{ mode.description }}</p>
           <div class="mode-badge" v-if="mode.id === GameMode.ANOMALY_HUNT">CLASSIC</div>
+          <div class="mode-badge ready" v-else-if="mode.id === GameMode.SEQUENCE || mode.id === GameMode.WORD_TRAP">READY</div>
           <div class="mode-badge new" v-else>COMING SOON</div>
         </div>
       </div>
@@ -23,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { MODE_CONFIGS, GameMode } from '../types/modes';
+import { MODE_CONFIGS, GameMode, type GameModeValue } from '../types/modes';
 import { useGameStore, GameState } from '../store/gameStore';
 
 const store = useGameStore();
@@ -32,15 +33,19 @@ const modes = MODE_CONFIGS;
 defineEmits(['close']);
 
 function selectMode(modeId: string) {
-  // For now, only Anomaly Hunt is implemented
-  if (modeId !== GameMode.ANOMALY_HUNT) {
+  // Enable Anomaly Hunt, Sequence Breaker, and Word Trap
+  if (modeId !== GameMode.ANOMALY_HUNT && modeId !== GameMode.SEQUENCE && modeId !== GameMode.WORD_TRAP) {
     alert('This mode is coming soon! 🚀');
     return;
   }
   
-  store.currentMode = modeId;
+  store.currentMode = modeId as GameModeValue;
   store.gameState = GameState.PLAYING;
-  store.startGame();
+  
+  // Only start game engine for Anomaly Hunt
+  if (modeId === GameMode.ANOMALY_HUNT) {
+    store.startGame();
+  }
 }
 </script>
 
@@ -169,6 +174,16 @@ function selectMode(modeId: string) {
 
 .mode-badge.new {
   background: #95a5a6;
+}
+
+.mode-badge.ready {
+  background: #2ecc71;
+  animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 @media (max-width: 600px) {
