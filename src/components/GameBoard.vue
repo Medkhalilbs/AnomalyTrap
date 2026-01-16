@@ -1,9 +1,16 @@
 <template>
   <div class="game-board-container">
     <div class="game-header">
+      <button class="exit-button" @click="store.goToMenu()">
+        <span>🏠</span>
+      </button>
+
       <div class="iq-display">
         <span class="iq-label">ESTIMATED IQ</span>
         <span class="iq-value">{{ Math.round(store.estimatedIQ) }}</span>
+        <div class="progress-track">
+          <div class="progress-bar" :style="{ width: `${((store.score % 5) / 5) * 100}%` }"></div>
+        </div>
       </div>
       
       <div class="header-controls">
@@ -73,36 +80,73 @@ function handleTap(index: number) {
   max-width: 400px;
   padding: 0 20px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.header-controls {
-  width: 100%;
-  display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
+  position: relative;
+}
+
+.exit-button {
+  background: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--secondary-color);
+  transition: transform 0.1s;
+}
+
+.exit-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--secondary-color);
 }
 
 .iq-display {
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex-grow: 1;
 }
 
 .iq-label {
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   font-weight: 700;
-  color: #7f8c8d;
+  color: var(--secondary-color);
+  opacity: 0.5;
   letter-spacing: 2px;
 }
 
 .iq-value {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 900;
-  color: #3498db;
+  color: var(--primary-color);
   line-height: 1;
+}
+
+.progress-track {
+  width: 100px;
+  height: 4px;
+  background: rgba(0,0,0,0.05);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+.header-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
 }
 
 .hint-button {

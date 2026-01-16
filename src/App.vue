@@ -1,20 +1,28 @@
 <template>
   <main class="app-main">
-    <GameBoard />
-    <GameOver 
-      v-if="store.isGameOver" 
-      :score="store.score" 
-      :highscore="store.highscore"
-      @restart="store.restart()"
-    />
+    <Transition name="fade">
+      <MainMenu v-if="store.gameState === GameState.MENU" />
+    </Transition>
+
+    <GameBoard v-if="store.gameState !== GameState.MENU" />
+
+    <Transition name="slide-up">
+      <GameOver 
+        v-if="store.gameState === GameState.GAMEOVER" 
+        :score="store.score" 
+        :highscore="store.highscore"
+        @restart="store.restart()"
+      />
+    </Transition>
   </main>
 </template>
 
 <script setup lang="ts">
 import { onMounted, watch } from 'vue';
+import MainMenu from './components/MainMenu.vue';
 import GameBoard from './components/GameBoard.vue';
 import GameOver from './components/GameOver.vue';
-import { useGameStore } from './store/gameStore';
+import { useGameStore, GameState } from './store/gameStore';
 
 const store = useGameStore();
 
@@ -42,5 +50,22 @@ function updateTheme() {
   height: 100%;
   position: relative;
   overflow: hidden;
+  background-color: var(--bg-color);
+}
+
+/* Transitions */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.slide-up-enter-active, .slide-up-leave-active {
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+}
+.slide-up-enter-from, .slide-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
 }
 </style>
