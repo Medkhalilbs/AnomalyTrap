@@ -3,47 +3,42 @@ import { ColorRule } from './ColorRule';
 import { ShapeRule } from './ShapeRule';
 import { PatternRule } from './PatternRule';
 import { OrientationRule } from './OrientationRule';
-import { MotionRule } from './MotionRule';
-import { GlitchRule } from './GlitchRule';
-import { RecursiveRule } from './RecursiveRule';
-import { StroopRule } from './StroopRule';
-import { PathRule } from './PathRule';
 import { getRandomInt, getRandomElement } from '../../utils/random';
 
 export class CompositeRule implements GameRule {
     name = 'Composite Logic';
-    description = 'Combination of multiple cognitive and visual anomalies.';
+    description = 'Combination of multiple visual anomalies.';
 
     private rules: GameRule[] = [
         new ColorRule(),
         new ShapeRule(),
         new PatternRule(),
-        new OrientationRule(),
-        new MotionRule(),
-        new GlitchRule(),
-        new RecursiveRule(),
-        new StroopRule(),
-        new PathRule()
+        new OrientationRule()
     ];
 
     generate(difficulty: number, count?: number): RuleResult {
         const itemCount = count || getRandomInt(5, 7);
 
-        // Pick two rules to combine
-        const rule1 = getRandomElement(this.rules) || this.rules[0];
-        const rule2 = getRandomElement(this.rules) || this.rules[1];
+        // Pick two DIFFERENT rules to combine
+        const rule1 = getRandomElement(this.rules) ?? this.rules[0];
+        let rule2 = getRandomElement(this.rules) ?? this.rules[1];
+
+        // Ensure rule2 is different from rule1
+        while (rule2 === rule1 && this.rules.length > 1) {
+            rule2 = getRandomElement(this.rules) ?? this.rules[1];
+        }
 
         const res1 = rule1.generate(difficulty, itemCount);
         const res2 = rule2.generate(difficulty, itemCount);
 
+        // Use res1's outlier as the final outlier
         const finalOutlierIndex = res1.outlierIndex;
         const items: LogicItemData[] = [];
 
         for (let i = 0; i < itemCount; i++) {
             const baseItem = res1.items[i];
-            const secondaryItem = res2.items[i === finalOutlierIndex ? res2.outlierIndex : (res2.outlierIndex + 1) % itemCount];
 
-            if (!baseItem || !secondaryItem) {
+            if (!baseItem) {
                 items.push({
                     id: i.toString(),
                     shape: 'circle',
@@ -60,22 +55,30 @@ export class CompositeRule implements GameRule {
                 continue;
             }
 
-            // Merge properties aggressively for "Brain Fuck" effect
+            // For decoys: take properties from res2's decoys
+            // For outlier: keep res1's outlier properties (don't override!)
+            const secondaryIndex = i === finalOutlierIndex ? res2.outlierIndex : (res2.outlierIndex + 1) % itemCount;
+            const secondaryItem = res2.items[secondaryIndex];
+
+            if (!secondaryItem) {
+                items.push(baseItem);
+                continue;
+            }
+
+            // Merge: base properties from res1, add secondary visual details from res2
             items.push({
                 ...baseItem,
-                innerShape: secondaryItem.innerShape,
-                innerColor: secondaryItem.innerColor,
-                secondaryColor: i === finalOutlierIndex ? baseItem.secondaryColor : secondaryItem.secondaryColor,
-                rotation: i === finalOutlierIndex ? baseItem.rotation : secondaryItem.rotation,
-                animationType: i === finalOutlierIndex ? baseItem.animationType : secondaryItem.animationType,
-                animationSpeed: i === finalOutlierIndex ? baseItem.animationSpeed : secondaryItem.animationSpeed
+                // Add secondary visual complexity without breaking the primary rule
+                strokeWidth: secondaryItem.strokeWidth,
+                hasInnerDot: secondaryItem.hasInnerDot,
+                isHollow: secondaryItem.isHollow
             });
         }
 
         return {
             items,
             outlierIndex: finalOutlierIndex,
-            ruleDescription: 'Extreme Cognitive Anomaly',
+            ruleDescription: 'Multi-Logic Anomaly',
         };
     }
 }

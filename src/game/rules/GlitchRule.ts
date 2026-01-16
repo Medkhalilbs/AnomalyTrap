@@ -10,13 +10,13 @@ export class GlitchRule implements GameRule {
         const items: LogicItemData[] = [];
         const outlierIndex = getRandomInt(0, itemCount - 1);
 
-        const baseShape = getRandomElement(['polygon', 'star', 'hexagon'] as any) || 'square';
+        const baseShape = getRandomElement(['star', 'hexagon', 'pentagon'] as const) || 'star';
         const baseColor = '#e74c3c';
 
         for (let i = 0; i < itemCount; i++) {
             items.push({
                 id: i.toString(),
-                shape: baseShape as any,
+                shape: baseShape,
                 color: baseColor,
                 rotation: 0,
                 scale: 1,

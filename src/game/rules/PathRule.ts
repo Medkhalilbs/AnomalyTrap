@@ -1,5 +1,5 @@
 import type { GameRule, RuleResult, LogicItemData } from './Rule';
-import { getRandomInt, getRandomElement } from '../../utils/random';
+import { getRandomInt } from '../../utils/random';
 
 export class PathRule implements GameRule {
     name = 'Path Logic';
@@ -10,54 +10,38 @@ export class PathRule implements GameRule {
         const items: LogicItemData[] = [];
         const outlierIndex = getRandomInt(0, itemCount - 1);
 
-        // Logic: All shapes point towards the "center" or "clockwise"
-        // The outlier points outwards or anti-clockwise.
-        const ruleType = getRandomElement(['flow', 'connection']);
         const baseShape = 'triangle'; // Triangle is the best "arrow"
+        const baseColor = '#3498db';
 
         for (let i = 0; i < itemCount; i++) {
-            let rotation = 0; // Default: points Up
+            let rotation = 0;
 
-            if (ruleType === 'flow') {
-                // All items point to the NEXT item index (imaginary circle)
-                // Angle = (i / itemCount) * 360
-                const targetRotation = (i / itemCount) * 360;
-                if (i === outlierIndex) {
-                    rotation = (targetRotation + 180) % 360; // Points opposite
-                } else {
-                    rotation = targetRotation;
-                }
+            // All items point UP except the outlier points DOWN
+            if (i === outlierIndex) {
+                rotation = 180; // Points opposite direction
             } else {
-                // All items point to Center
-                // Actually rotation logic in CSS vs SVG can be tricky
-                // Let's use "Parallel" vs "Intersecting"
-                if (i === outlierIndex) {
-                    rotation = 45;
-                } else {
-                    rotation = 0;
-                }
+                rotation = 0; // Points up
             }
 
             items.push({
                 id: i.toString(),
                 shape: baseShape,
-                color: '#3498db',
+                color: baseColor,
                 rotation,
                 scale: 1,
                 opacity: 1,
                 strokeWidth: 4,
                 hasInnerDot: false,
-                isHollow: true, // Show the arrow clearly
-                strokeColor: '#3498db',
+                isHollow: true,
                 animationType: 'none',
                 animationSpeed: 0
-            } as any);
+            });
         }
 
         return {
             items,
             outlierIndex,
-            ruleDescription: `Rule: ${ruleType} path`,
+            ruleDescription: 'Find the opposite direction',
         };
     }
 }

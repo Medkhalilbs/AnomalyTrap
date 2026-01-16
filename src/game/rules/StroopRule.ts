@@ -18,41 +18,33 @@ export class StroopRule implements GameRule {
         const items: LogicItemData[] = [];
         const outlierIndex = getRandomInt(0, itemCount - 1);
 
-        const colorA = getRandomElement(COLORS);
-        const colorB = getRandomElement(COLORS.filter(c => c !== colorA));
+        const colorA = getRandomElement(COLORS) ?? COLORS[0];
+        const colorB = getRandomElement(COLORS.filter(c => c !== colorA)) ?? COLORS[1];
 
-        const baseShape = getRandomElement(['square', 'hexagon', 'pentagon'] as const);
+        const baseShape = getRandomElement(['square', 'hexagon', 'pentagon'] as const) ?? 'square';
 
         for (let i = 0; i < itemCount; i++) {
-            let outerColor = colorA;
-            let secondaryColor = colorB;
-
-            if (i === outlierIndex) {
-                // The "Brain Fuck" swap
-                outerColor = colorB;
-                secondaryColor = colorA;
-            }
-
             items.push({
                 id: i.toString(),
                 shape: baseShape,
-                color: outerColor,
-                secondaryColor,
+                color: i === outlierIndex ? colorB : colorA,
                 rotation: 0,
                 scale: 1,
                 opacity: 1,
                 strokeWidth: 4,
-                hasInnerDot: false,
+                hasInnerDot: true,
                 isHollow: false,
                 animationType: 'none',
-                animationSpeed: 0
+                animationSpeed: 0,
+                innerShape: 'circle',
+                innerColor: i === outlierIndex ? colorA : colorB
             });
         }
 
         return {
             items,
             outlierIndex,
-            ruleDescription: 'Find the Inversion',
+            ruleDescription: 'Find the Color Swap',
         };
     }
 }
