@@ -97,6 +97,10 @@ export class GameEngine {
         localStorage.setItem('outlier_highscore', this.highscore.toString());
     }
 
+    getScore(): number {
+        return this.score;
+    }
+
     getHighscore(): number {
         return this.highscore;
     }

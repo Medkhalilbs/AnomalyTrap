@@ -5,8 +5,8 @@ export class ShapeRule implements GameRule {
     name = 'Shape Logic';
     description = 'Logic based on geometry, sides, or rotation.';
 
-    generate(_difficulty: number): RuleResult {
-        const itemCount = getRandomInt(5, 7);
+    generate(_difficulty: number, count?: number): RuleResult {
+        const itemCount = count || getRandomInt(5, 7);
         const items: LogicItemData[] = [];
         const outlierIndex = getRandomInt(0, itemCount - 1);
 

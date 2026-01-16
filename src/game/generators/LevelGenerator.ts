@@ -3,7 +3,7 @@ import { NumberRule } from '../rules/NumberRule';
 import { ShapeRule } from '../rules/ShapeRule';
 import { ColorRule } from '../rules/ColorRule';
 import { CompositeRule } from '../rules/CompositeRule';
-import { getRandomElement } from '../../utils/random';
+import { getRandomElement, getRandomInt } from '../../utils/random';
 
 export class LevelGenerator {
     private rules: GameRule[] = [];
@@ -18,19 +18,36 @@ export class LevelGenerator {
     }
 
     generate(level: number): RuleResult {
-        // Increase difficulty based on level
+        const isBoss = level % 5 === 0;
         const difficulty = Math.floor(level / 5);
 
-        // Choose available rules based on difficulty
-        // (Early levels might only use Number or Color)
+        // Grid size scaling
+        let itemCount = getRandomInt(5, 7);
+        if (isBoss) {
+            itemCount = 9 + (difficulty * 3); // 9, 12, 15...
+            if (itemCount > 20) itemCount = 20; // Cap grid size
+        } else if (level > 5) {
+            itemCount = getRandomInt(6, 8);
+        }
+
+        // Rule selection
         let availableRules = this.rules;
-        if (level < 5) {
+        if (isBoss) {
+            // Boss levels are always Composite
+            availableRules = this.rules.filter(r => r instanceof CompositeRule);
+        } else if (level < 5) {
             availableRules = this.rules.filter(r => r instanceof NumberRule || r instanceof ColorRule);
         } else if (level < 10) {
             availableRules = this.rules.filter(r => !(r instanceof CompositeRule));
         }
 
         const rule = getRandomElement(availableRules);
-        return rule.generate(difficulty);
+        const result = rule.generate(difficulty, itemCount);
+
+        if (isBoss) {
+            result.ruleDescription = `BOSS: ${result.ruleDescription}`;
+        }
+
+        return result;
     }
 }

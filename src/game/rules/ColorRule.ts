@@ -10,8 +10,8 @@ export class ColorRule implements GameRule {
         '#1abc9c', '#e67e22', '#7f8c8d'
     ];
 
-    generate(_difficulty: number): RuleResult {
-        const itemCount = getRandomInt(5, 7);
+    generate(_difficulty: number, count?: number): RuleResult {
+        const itemCount = count || getRandomInt(5, 7);
         const items: LogicItemData[] = [];
         const outlierIndex = getRandomInt(0, itemCount - 1);
 

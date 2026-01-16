@@ -21,19 +21,22 @@
     </div>
 
     <div class="score-display">
+      <div class="level-indicator" :class="{ 'boss-text': store.levelText.includes('BOSS') }">
+        {{ store.levelText }}
+      </div>
       <div class="current-score">{{ store.score }}</div>
     </div>
     
     <div class="grid-container">
-      <div class="items-grid" :class="{ 'hint-active': store.isHintActive }">
+      <TransitionGroup name="grid" tag="div" class="items-grid" :class="{ 'hint-active': store.isHintActive }">
         <LogicItem 
           v-for="(item, index) in store.currentItems" 
-          :key="index" 
+          :key="item.id || index" 
           :item="item"
           :class="{ 'is-outlier': index === store.outlierIndex, 'is-decoy': index !== store.outlierIndex && store.isHintActive }"
           @tap="handleTap(index)"
         />
-      </div>
+      </TransitionGroup>
     </div>
 
     <FeedbackOverlay v-if="store.lastCorrect" type="success" />
@@ -139,12 +142,36 @@ function handleTap(index: number) {
 .score-display {
   text-align: center;
   margin: 5px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.level-indicator {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  opacity: 0.8;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.boss-text {
+  color: #e74c3c;
+  animation: pulse 1s infinite alternate;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); opacity: 0.8; }
+  to { transform: scale(1.1); opacity: 1; }
 }
 
 .current-score {
   font-size: 4rem;
   font-weight: 800;
-  color: #2c3e50;
+  color: var(--secondary-color);
   line-height: 1;
 }
 
@@ -165,6 +192,26 @@ function handleTap(index: number) {
   padding: 20px;
   justify-items: center;
   transition: opacity 0.3s ease;
+}
+
+/* Transitions */
+.grid-enter-active,
+.grid-leave-active {
+  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.grid-enter-from {
+  opacity: 0;
+  transform: translateY(30px) scale(0.9);
+}
+
+.grid-leave-to {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.grid-move {
+  transition: transform 0.5s ease;
 }
 
 .is-decoy {

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { GameEngine } from '../game/engine/GameEngine';
 import type { RuleResult, LogicItemData } from '../game/rules/Rule';
+import { getThemeForScore, themes, type Theme } from '../utils/themes';
 
 export const useGameStore = defineStore('game', {
     state: () => ({
@@ -16,6 +17,7 @@ export const useGameStore = defineStore('game', {
         lastCorrect: false,
         engine: null as GameEngine | null,
         levelText: 'Level 1',
+        currentTheme: themes[0] as Theme,
     }),
 
     actions: {
@@ -24,6 +26,11 @@ export const useGameStore = defineStore('game', {
                 (result: RuleResult) => {
                     this.currentItems = result.items;
                     this.outlierIndex = result.outlierIndex;
+
+                    const level = this.engine?.getScore() ? this.engine.getScore() + 1 : 1;
+                    const isBoss = level % 5 === 0;
+                    this.levelText = isBoss ? `BOSS LEVEL ${level / 5}` : `Level ${level}`;
+                    this.currentTheme = getThemeForScore(this.score);
                 },
                 (finalScore: number) => {
                     this.score = finalScore;
@@ -33,6 +40,7 @@ export const useGameStore = defineStore('game', {
                     this.score = newScore;
                     this.highscore = Math.max(this.highscore, this.engine?.getHighscore() || 0);
                     this.estimatedIQ = this.engine?.getEstimatedIQ() || 100;
+                    this.currentTheme = getThemeForScore(this.score);
                 },
                 (lives: number) => {
                     this.lives = lives;

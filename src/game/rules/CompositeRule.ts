@@ -5,12 +5,12 @@ export class CompositeRule implements GameRule {
     name = 'Composite Logic';
     description = 'Logic combining color and number or shape.';
 
-    generate(_difficulty: number): RuleResult {
+    generate(_difficulty: number, count?: number): RuleResult {
         // For simplicity, we'll combine Color + Number
         // Rule: All Even numbers are Blue, All Odd numbers are Red.
         // Outlier: An Even number that is Red, or an Odd number that is Blue.
 
-        const itemCount = getRandomInt(5, 7);
+        const itemCount = count || getRandomInt(5, 7);
         const items: LogicItemData[] = [];
         const outlierIndex = getRandomInt(0, itemCount - 1);
 

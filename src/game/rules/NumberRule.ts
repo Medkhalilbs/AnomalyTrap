@@ -5,8 +5,8 @@ export class NumberRule implements GameRule {
     name = 'Number Logic';
     description = 'Logic based on numerical values or parity.';
 
-    generate(difficulty: number): RuleResult {
-        const itemCount = getRandomInt(5, 7);
+    generate(difficulty: number, count?: number): RuleResult {
+        const itemCount = count || getRandomInt(5, 7);
         const items: LogicItemData[] = [];
         const outlierIndex = getRandomInt(0, itemCount - 1);
 

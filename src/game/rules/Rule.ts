@@ -20,5 +20,5 @@ export interface RuleResult {
 export interface GameRule {
     name: string;
     description: string;
-    generate(difficulty: number): RuleResult;
+    generate(difficulty: number, count?: number): RuleResult;
 }
