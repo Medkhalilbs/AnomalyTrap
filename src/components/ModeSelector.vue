@@ -15,7 +15,7 @@
           <h3 class="mode-name">{{ mode.name }}</h3>
           <p class="mode-description">{{ mode.description }}</p>
           <div class="mode-badge" v-if="mode.id === GameMode.ANOMALY_HUNT">CLASSIC</div>
-          <div class="mode-badge ready" v-else-if="mode.id === GameMode.SEQUENCE || mode.id === GameMode.WORD_TRAP">READY</div>
+          <div class="mode-badge ready" v-else-if="mode.id === GameMode.SEQUENCE || mode.id === GameMode.WORD_TRAP || mode.id === GameMode.MEMORY">READY</div>
           <div class="mode-badge new" v-else>COMING SOON</div>
         </div>
       </div>
@@ -33,8 +33,9 @@ const modes = MODE_CONFIGS;
 defineEmits(['close']);
 
 function selectMode(modeId: string) {
-  // Enable Anomaly Hunt, Sequence Breaker, and Word Trap
-  if (modeId !== GameMode.ANOMALY_HUNT && modeId !== GameMode.SEQUENCE && modeId !== GameMode.WORD_TRAP) {
+  // Enable implemented modes
+  const enabledModes = [GameMode.ANOMALY_HUNT, GameMode.SEQUENCE, GameMode.WORD_TRAP, GameMode.MEMORY];
+  if (!enabledModes.includes(modeId as any)) {
     alert('This mode is coming soon! 🚀');
     return;
   }

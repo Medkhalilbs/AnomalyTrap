@@ -9,6 +9,7 @@
       <GameBoard v-if="store.currentMode === GameMode.ANOMALY_HUNT" />
       <SequenceMode v-else-if="store.currentMode === GameMode.SEQUENCE" />
       <WordTrapMode v-else-if="store.currentMode === GameMode.WORD_TRAP" />
+      <MemoryMode v-else-if="store.currentMode === GameMode.MEMORY" />
       <!-- Other modes will be added here -->
     </template>
 
@@ -30,6 +31,7 @@ import GameBoard from './components/GameBoard.vue';
 import GameOver from './components/GameOver.vue';
 import SequenceMode from './modes/sequence/SequenceMode.vue';
 import WordTrapMode from './modes/word/WordTrapMode.vue';
+import MemoryMode from './modes/memory/MemoryMode.vue';
 import { useGameStore, GameState } from './store/gameStore';
 import { GameMode } from './types/modes';
 
