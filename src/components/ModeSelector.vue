@@ -11,13 +11,15 @@
           v-for="mode in filteredModes"
           :key="mode.id"
           class="mode-card"
-          :style="{ borderColor: mode.color }"
+          :style="{ '--card-color': mode.color, borderColor: mode.color }"
           @click="selectMode(mode.id)"
         >
-          <div class="mode-icon">{{ mode.icon }}</div>
-          <h3 class="mode-name">{{ getModeInfo(mode.id).name }}</h3>
-          <p class="mode-description">{{ getModeInfo(mode.id).desc }}</p>
-          <div class="mode-badge">{{ t('play') }}</div>
+          <div class="mode-icon" :style="{ color: mode.color }">{{ mode.icon }}</div>
+          <div class="mode-info-wrapper">
+            <h3 class="mode-name">{{ getModeInfo(mode.id).name }}</h3>
+            <p class="mode-description">{{ getModeInfo(mode.id).desc }}</p>
+            <div class="mode-badge">{{ t('play') }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -81,200 +83,197 @@ function selectMode(modeId: string) {
   to { opacity: 1; }
 }
 
+/* ... existing styles ... */
+
 .mode-selector {
   width: 95%;
-  max-width: 1000px;
-  height: 90vh; /* Fixed height for scroll internal */
+  max-width: 1200px;
+  height: 90vh;
   display: flex;
   flex-direction: column;
   background: transparent;
-  padding: 0; /* Remove padding for edge-to-edge feel on mobile */
+  padding: 0;
   position: relative;
   animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes slideUp {
-  from { transform: translateY(50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: white;
-  border: none;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  font-size: 1.4rem;
-  cursor: pointer;
-  color: #333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 20;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-.selector-title {
-  font-size: 2rem;
-  font-weight: 900;
-  color: white;
-  margin: 20px 0;
-  text-align: center;
-  text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  flex-shrink: 0;
-}
+/* ... animations ... */
 
 .modes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
   padding: 20px;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
-  /* Hide scrollbar */
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
 
-.modes-grid::-webkit-scrollbar {
-  display: none;
-}
-
 .mode-card {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 20px 15px;
+  background: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 25px 20px;
   cursor: pointer;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 180px;
-  transition: transform 0.2s, background 0.2s;
+  justify-content: flex-start;
+  min-height: 240px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .mode-card:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-5px);
+  transform: translateY(-8px) scale(1.02);
+  background: rgba(40, 40, 40, 0.8);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
 .mode-card:active {
-  transform: scale(0.96);
+  transform: scale(0.98);
 }
 
-/* Card color strip */
+/* Gradient Glow Effect */
 .mode-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 6px;
-  background: currentColor; /* Uses border-color style */
-  opacity: 0.8;
-  border-radius: 20px 20px 0 0;
+  height: 100%;
+  background: radial-gradient(circle at top, var(--card-color, rgba(255,255,255,0.1)), transparent 70%);
+  opacity: 0.15;
+  transition: opacity 0.3s;
+}
+
+.mode-card:hover::before {
+  opacity: 0.3;
 }
 
 .mode-icon {
-  font-size: 3.5rem;
-  margin-bottom: 15px;
-  filter: drop-shadow(0 0 10px rgba(0,0,0,0.2));
+  font-size: 4rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 15px rgba(0,0,0,0.3));
+  transition: transform 0.3s;
+  z-index: 1;
+}
+
+.mode-card:hover .mode-icon {
+  transform: scale(1.1) rotate(5deg);
 }
 
 .mode-name {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: 800;
   color: white;
   text-align: center;
-  margin: 0 0 5px 0;
+  margin: 0 0 10px 0;
   line-height: 1.2;
+  z-index: 1;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .mode-description {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
   text-align: center;
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  z-index: 1;
+  line-height: 1.4;
 }
 
 .mode-badge {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #2ecc71;
-    color: white;
-    font-size: 0.6rem;
-    padding: 3px 8px;
-    border-radius: 10px;
+    bottom: 15px;
+    background: white;
+    color: #333;
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    border-radius: 20px;
     font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+    opacity: 0.9;
+    z-index: 2;
+}
+
+.mode-card:hover .mode-badge {
+    transform: scale(1.05);
+    background: var(--card-color, white);
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
 /* Landscape / Desktop tweaks */
-/* Landscape / Desktop tweaks */
 @media (min-width: 768px) {
   .modes-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 25px;
-    padding: 30px;
-  }
-  
-  .mode-card {
-    min-height: 220px;
-  }
-
-  .mode-icon {
-    font-size: 4.5rem;
-  }
-
-  .mode-name {
-    font-size: 1.4rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 30px;
+    padding: 40px;
   }
 }
 
 /* Small mobile tweak */
-@media (max-width: 400px) {
+@media (max-width: 480px) {
   .modes-grid {
-    grid-template-columns: 1fr; /* Single column on very small screens */
-    gap: 10px;
-    padding: 10px;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 15px;
   }
 
   .mode-card {
-    flex-direction: row; /* Horizontal layout for single column */
-    min-height: 100px;
+    flex-direction: row;
+    min-height: 110px;
     justify-content: flex-start;
-    padding: 15px;
+    padding: 15px 20px;
     gap: 20px;
+    align-items: center;
   }
 
   .mode-icon {
     margin-bottom: 0;
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 
   .mode-info-wrapper {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    flex: 1;
   }
 
   .mode-name {
     text-align: left;
     font-size: 1.2rem;
+    margin-bottom: 5px;
   }
 
   .mode-description {
     text-align: left;
     -webkit-line-clamp: 2;
+    font-size: 0.85rem;
+  }
+  
+  .mode-badge {
+      position: static;
+      margin-top: 8px;
+      font-size: 0.65rem;
+      padding: 4px 10px;
+      align-self: flex-start;
   }
 }
+
 </style>

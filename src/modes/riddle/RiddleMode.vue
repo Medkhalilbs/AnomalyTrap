@@ -44,7 +44,7 @@ function t(key: keyof typeof translations['en']) {
 }
 
 const score = ref(0);
-const currentChallenge = ref<RiddleChallenge>(generator.generateChallenge(1));
+const currentChallenge = ref<RiddleChallenge>(generator.generateChallenge(1, store.language as 'en' | 'fr' | 'ar'));
 const selectedAnswer = ref<string | null>(null);
 const showResult = ref(false);
 const isCorrect = ref(false);
@@ -66,7 +66,7 @@ function selectAnswer(answer: string) {
 }
 
 function nextChallenge() {
-  currentChallenge.value = generator.generateChallenge(Math.floor(score.value / 5) + 1);
+  currentChallenge.value = generator.generateChallenge(Math.floor(score.value / 5) + 1, store.language as 'en' | 'fr' | 'ar');
   selectedAnswer.value = null;
   showResult.value = false;
   isCorrect.value = false;
