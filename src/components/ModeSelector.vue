@@ -3,9 +3,22 @@
     <div class="mode-selector">
       <button class="close-btn" @click="$emit('close')">✕</button>
       <h2 class="selector-title">Choose Your Challenge</h2>
+
+      <div class="tabs-container">
+        <button 
+            v-for="tab in tabs" 
+            :key="tab.id"
+            class="tab-btn"
+            :class="{ active: currentTab === tab.id }"
+            @click="currentTab = tab.id"
+        >
+            {{ tab.label }}
+        </button>
+      </div>
+
       <div class="modes-grid">
         <div
-          v-for="mode in modes"
+          v-for="mode in filteredModes"
           :key="mode.id"
           class="mode-card"
           :style="{ borderColor: mode.color }"
@@ -14,9 +27,7 @@
           <div class="mode-icon">{{ mode.icon }}</div>
           <h3 class="mode-name">{{ mode.name }}</h3>
           <p class="mode-description">{{ mode.description }}</p>
-          <div class="mode-badge" v-if="mode.id === GameMode.ANOMALY_HUNT">CLASSIC</div>
-          <div class="mode-badge ready" v-else-if="mode.id === GameMode.SEQUENCE || mode.id === GameMode.WORD_TRAP || mode.id === GameMode.MEMORY">READY</div>
-          <div class="mode-badge new" v-else>COMING SOON</div>
+          <div class="mode-badge">PLAY</div>
         </div>
       </div>
     </div>
@@ -24,33 +35,42 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue';
 import { MODE_CONFIGS, GameMode, type GameModeValue } from '../types/modes';
 import { useGameStore, GameState } from '../store/gameStore';
 
 const store = useGameStore();
-const modes = MODE_CONFIGS;
+const currentTab = ref('all');
+
+const tabs = [
+    { id: 'all', label: 'All' },
+    { id: 'logic', label: 'Logic' },
+    { id: 'word', label: 'Word' },
+    { id: 'memory', label: 'Memory' },
+    { id: 'mystery', label: 'Mystery' }
+];
+
+const filteredModes = computed(() => {
+    if (currentTab.value === 'all') return MODE_CONFIGS;
+    
+    return MODE_CONFIGS.filter(mode => {
+        if (currentTab.value === 'logic') return ([GameMode.ANOMALY_HUNT, GameMode.SEQUENCE, GameMode.CONTRADICTION] as string[]).includes(mode.id);
+        if (currentTab.value === 'word') return ([GameMode.WORD_TRAP, GameMode.RIDDLE, GameMode.CIPHER] as string[]).includes(mode.id);
+        if (currentTab.value === 'memory') return ([GameMode.MEMORY] as string[]).includes(mode.id);
+        if (currentTab.value === 'mystery') return ([GameMode.DETECTIVE] as string[]).includes(mode.id);
+        return true;
+    });
+});
 
 defineEmits(['close']);
 
-  function selectMode(modeId: string) {
-  // Enable implemented modes
-  const enabledModes = [
-    GameMode.ANOMALY_HUNT, 
-    GameMode.SEQUENCE, 
-    GameMode.WORD_TRAP, 
-    GameMode.MEMORY,
-    GameMode.RIDDLE,
-    GameMode.CIPHER
-  ];
-  if (!enabledModes.includes(modeId as any)) {
-    alert('This mode is coming soon! 🚀');
-    return;
-  }
-  
+function selectMode(modeId: string) {  
   store.currentMode = modeId as GameModeValue;
   store.gameState = GameState.PLAYING;
   
-  // Only start game engine for Anomaly Hunt
+  // Only start game engine display for Anomaly Hunt immediately? 
+  // Actually most modes handle their own start now via onMounted or their own init.
+  // Anomaly Hunt needs explicit start from store.
   if (modeId === GameMode.ANOMALY_HUNT) {
     store.startGame();
   }

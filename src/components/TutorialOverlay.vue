@@ -1,37 +1,13 @@
 <template>
   <div class="tutorial-overlay" @click="$emit('close')">
     <div class="tutorial-content" @click.stop>
-      <h2>HOW TO PLAY</h2>
+      <h2>HOW TO PLAY: {{ modeName }}</h2>
       
-      <div class="tutorial-step">
-        <div class="tutorial-icon">🧐</div>
+      <div v-for="(step, index) in steps" :key="index" class="tutorial-step">
+        <div class="tutorial-icon">{{ step.icon }}</div>
         <div class="tutorial-text">
-          <strong>Find the Anomaly</strong>
-          <p>Every level has several items. Exactly ONE follows a different logic than the others.</p>
-        </div>
-      </div>
-
-      <div class="tutorial-step">
-        <div class="tutorial-icon">❤️</div>
-        <div class="tutorial-text">
-          <strong>3 Lives</strong>
-          <p>Don't rush! You have 3 hearts. Guess wrong and you lose one. Game ends at zero.</p>
-        </div>
-      </div>
-
-      <div class="tutorial-step">
-        <div class="tutorial-icon">🔥</div>
-        <div class="tutorial-text">
-          <strong>Boss Levels</strong>
-          <p>Every 5 levels is a Boss Challenge with a massive grid and complex rules.</p>
-        </div>
-      </div>
-
-      <div class="tutorial-step">
-        <div class="tutorial-icon">💡</div>
-        <div class="tutorial-text">
-          <strong>Use Hints</strong>
-          <p>Stuck? Tap the bulb to dim the decoys and reveal the anomaly. Earn more every 10 levels.</p>
+          <strong>{{ step.title }}</strong>
+          <p>{{ step.desc }}</p>
         </div>
       </div>
 
@@ -41,6 +17,55 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useGameStore } from '../store/gameStore';
+import { GameMode } from '../types/modes';
+
+const store = useGameStore();
+
+const modeName = computed(() => {
+    const map: Record<string, string> = {
+        [GameMode.ANOMALY_HUNT]: 'Anomaly Hunt',
+        [GameMode.DETECTIVE]: 'Detective Mode',
+        [GameMode.CONTRADICTION]: 'Logic Check',
+        [GameMode.SEQUENCE]: 'Sequence Breaker',
+        [GameMode.WORD_TRAP]: 'Word Trap',
+        [GameMode.MEMORY]: 'Memory Matrix',
+        [GameMode.RIDDLE]: 'Riddle Rush',
+        [GameMode.CIPHER]: 'Cipher Crack'
+    };
+    return map[store.currentMode] || 'Anomaly Hunt';
+});
+
+const steps = computed(() => {
+    switch(store.currentMode) {
+        case GameMode.DETECTIVE:
+            return [
+                { icon: '🕵️‍♂️', title: 'Read the Case', desc: 'Examine the story and the suspects carefully.' },
+                { icon: '🧩', title: 'Find the Clue', desc: 'One detail in the story or statements reveals the truth.' },
+                { icon: '👈', title: 'Accuse', desc: 'Tap the suspect who is lying or matches the clue.' }
+            ];
+        case GameMode.CONTRADICTION:
+            return [
+                { icon: '⚠️', title: 'Analyze Statements', desc: 'Read all the facts presented.' },
+                { icon: '❌', title: 'Spot the Lie', desc: 'One statement logically contradicts the others or the premise.' },
+                { icon: '👇', title: 'Tap It', desc: 'Select the contradictory statement to win.' }
+            ];
+        case GameMode.SEQUENCE:
+            return [
+                 { icon: 'rules', title: 'Analyze Pattern', desc: 'Look at the numbers or symbols.' },
+                 { icon: 'question', title: 'Predict Next', desc: 'Choose the option that continues the sequence.' }
+            ];
+        // ... Add others as needed, default to Classic checks
+        default: 
+            return [
+                { icon: '🧐', title: 'Find Outlier', desc: 'One item follows a different logic than the others.' },
+                { icon: '❤️', title: 'Lives', desc: 'You have 3 lives. Wrong guesses cost a life.' },
+                { icon: '💡', title: 'Hints', desc: 'Use hints to remove options when stuck.' }
+            ];
+    }
+});
+
 defineEmits(['close']);
 </script>
 

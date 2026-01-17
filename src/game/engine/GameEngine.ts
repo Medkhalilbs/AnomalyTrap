@@ -72,7 +72,18 @@ export class GameEngine {
         }
     }
 
-    private gameOver() {
+    addScore(points: number) {
+        this.score += points;
+        this.onScoreUpdate(this.score);
+
+        // Reward hint occasionally (every 500 points?)
+        if (this.score > 0 && this.score % 500 === 0) {
+            this.hints = Math.min(3, this.hints + 1);
+            this.onHintReward(this.hints);
+        }
+    }
+
+    gameOver() {
         this.isRunning = false;
 
         if (this.score > this.highscore) {

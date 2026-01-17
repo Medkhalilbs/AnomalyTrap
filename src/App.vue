@@ -12,6 +12,8 @@
       <MemoryMode v-else-if="store.currentMode === GameMode.MEMORY" />
       <RiddleMode v-else-if="store.currentMode === GameMode.RIDDLE" />
       <CipherMode v-else-if="store.currentMode === GameMode.CIPHER" />
+      <DetectiveMode v-else-if="store.currentMode === GameMode.DETECTIVE" />
+      <ContradictionMode v-else-if="store.currentMode === GameMode.CONTRADICTION" />
       <!-- Other modes will be added here -->
     </template>
 
@@ -36,6 +38,8 @@ import WordTrapMode from './modes/word/WordTrapMode.vue';
 import MemoryMode from './modes/memory/MemoryMode.vue';
 import RiddleMode from './modes/riddle/RiddleMode.vue';
 import CipherMode from './modes/cipher/CipherMode.vue';
+import DetectiveMode from './modes/detective/DetectiveMode.vue';
+import ContradictionMode from './modes/contradiction/ContradictionMode.vue';
 import { useGameStore, GameState } from './store/gameStore';
 import { GameMode } from './types/modes';
 
