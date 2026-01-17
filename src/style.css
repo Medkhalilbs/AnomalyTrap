@@ -51,7 +51,9 @@ body {
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 * {

@@ -1,5 +1,10 @@
 <template>
   <div class="detective-mode">
+    <div class="mode-header">
+      <button class="back-btn" @click="goBack" aria-label="Home">🏠</button>
+      <div class="score-display">Score: {{ store.score }}</div>
+    </div>
+
     <div class="story-card">
       <h2 class="story-title">{{ currentScenario.title }}</h2>
       <p class="story-text">{{ currentScenario.story }}</p>
@@ -40,11 +45,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useGameStore } from '../../store/gameStore';
+import { useGameStore, GameState } from '../../store/gameStore';
 import { DetectiveGenerator, type DetectiveScenario } from './detectiveData';
 
 const store = useGameStore();
 const generator = new DetectiveGenerator();
+
+function goBack() {
+  store.gameState = GameState.MENU;
+}
 
 const currentScenario = ref<DetectiveScenario>(generator.generateChallenge(1));
 const selectedSuspect = ref<string | null>(null);
@@ -92,6 +101,29 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 30px;
+}
+
+.mode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.back-btn {
+  background: white;
+  border: 2px solid var(--secondary-color);
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.score-display {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--primary-color);
 }
 
 .story-card {

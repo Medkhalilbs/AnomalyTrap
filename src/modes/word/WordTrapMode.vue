@@ -1,7 +1,7 @@
 <template>
   <div class="word-trap-mode">
     <div class="mode-header">
-      <button class="back-btn" @click="goBack">← Back</button>
+      <button class="back-btn" @click="goBack" aria-label="Home">🏠</button>
       <div class="score-display">Score: {{ score }}</div>
     </div>
 

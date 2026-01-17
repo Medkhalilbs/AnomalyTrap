@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
 import { GameEngine } from '../game/engine/GameEngine';
 import type { RuleResult, LogicItemData } from '../game/rules/Rule';
-import { getThemeForScore, themes, type Theme } from '../utils/themes';
+// import { getThemeForScore, themes, type Theme } from '../utils/themes'; // Unused
+import { themes, type Theme } from '../utils/themes'; // We still need themes for default
 import { sounds } from '../utils/sounds';
 import { GameMode, type GameModeValue } from '../types/modes';
 import { type Goal, GENERATE_DAILY_GOALS, LIFETIME_MILESTONES } from '../types/objectives';
@@ -53,7 +54,7 @@ export const useGameStore = defineStore('game', {
                     const level = this.engine?.getScore() ? (this.engine.getScore() + 1) : 1;
                     const isBoss = level % 5 === 0;
                     this.levelText = isBoss ? `BOSS LEVEL ${Math.floor(level / 5)}` : `Level ${level}`;
-                    this.currentTheme = getThemeForScore(this.score);
+                    // this.currentTheme = getThemeForScore(this.score); // Disabled per user request
                 },
                 (finalScore: number) => {
                     this.score = finalScore;
@@ -65,7 +66,7 @@ export const useGameStore = defineStore('game', {
                 (newScore: number) => {
                     this.score = newScore;
                     this.highscore = Math.max(this.highscore, this.engine?.getHighscore() || 0);
-                    this.currentTheme = getThemeForScore(this.score);
+                    // this.currentTheme = getThemeForScore(this.score); // Disabled per user request
                     this.checkGoals('score', this.score);
                 },
                 (lives: number) => {
