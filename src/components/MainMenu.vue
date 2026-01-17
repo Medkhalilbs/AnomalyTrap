@@ -12,32 +12,29 @@
       </div>
     </div>
 
-    <div class="objective-card" v-if="store.currentObjective">
-      <div class="objective-header">
-        <span class="objective-icon">{{ store.currentObjective.reward }}</span>
-        <span class="objective-label">CURRENT GOAL</span>
-      </div>
-      <p class="objective-text">{{ store.currentObjective.description }}</p>
-      <div class="progress-bar">
-        <div class="progress-fill" :style="{ width: (store.currentObjective.current / store.currentObjective.target * 100) + '%' }"></div>
-      </div>
-    </div>
-
-    <div class="achievements-section">
-      <h3>ACHIEVEMENTS</h3>
-      <div class="badges-grid">
+    <div class="goals-section">
+      <h3>YOUR GOALS</h3>
+      <div class="goals-list">
         <div 
-          v-for="ach in store.achievements" 
-          :key="ach.id" 
-          class="badge"
-          :class="{ locked: !ach.unlocked }"
-          :title="ach.description"
+          v-for="goal in store.activeGoals.slice(0, 3)" 
+          :key="goal.id"
+          class="goal-card"
+          :class="{ completed: goal.completed }"
         >
-          <span class="badge-icon">{{ ach.unlocked ? ach.icon : '🔒' }}</span>
-          <span class="badge-name">{{ ach.name }}</span>
+            <div class="goal-icon">{{ goal.icon }}</div>
+            <div class="goal-info">
+                <span class="goal-desc">{{ goal.description }}</span>
+                <div class="rating-bar">
+                    <div class="rating-fill" :style="{ width: Math.min((goal.current / goal.target) * 100, 100) + '%' }"></div>
+                </div>
+            </div>
+            <div class="goal-progress" v-if="!goal.completed">{{ goal.current }}/{{ goal.target }}</div>
+            <div class="goal-reward" v-else>{{ goal.reward }}</div>
         </div>
       </div>
     </div>
+
+    <!-- Achievements Removed -->
 
     <div class="menu-actions">
       <button class="play-button" @click="showModeSelector = true">
@@ -125,6 +122,7 @@ const showModeSelector = ref(false);
 .game-title span {
   background: linear-gradient(135deg, var(--primary-color) 0%, #2980b9 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -303,55 +301,92 @@ const showModeSelector = ref(false);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.objective-card {
-  background: rgba(255, 255, 255, 0.08); /* Slightly less opaque than stats */
-  backdrop-filter: blur(10px);
-  width: 100%;
-  max-width: 300px;
-  border-radius: 20px;
-  padding: 15px 20px;
-  margin-bottom: 30px;
-  border: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 1;
+.goals-section {
+    width: 100%;
+    max-width: 340px;
+    margin-bottom: 30px;
+    z-index: 1;
 }
 
-.objective-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: center;
+.goals-section h3 {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    opacity: 0.6;
+    margin-bottom: 15px;
+    text-align: left;
+    padding-left: 10px;
 }
 
-.objective-label {
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 2px;
-  opacity: 0.8;
-  color: var(--primary-color);
+.goals-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.objective-text {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin: 0;
-  opacity: 0.9;
+.goal-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s;
 }
 
-.progress-bar {
-  width: 100%;
-  height: 6px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 3px;
-  overflow: hidden;
-  margin-top: 5px;
+.goal-card.completed {
+    background: rgba(46, 204, 113, 0.2);
+    border-color: rgba(46, 204, 113, 0.3);
 }
 
-.progress-fill {
-  height: 100%;
-  background: var(--primary-color);
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+.goal-icon {
+    font-size: 1.5rem;
 }
+
+.goal-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.goal-desc {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.rating-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.rating-fill {
+    height: 100%;
+    background: var(--primary-color);
+}
+
+.completed .rating-fill {
+    background: #2ecc71;
+}
+
+.goal-progress {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    font-weight: 700;
+}
+
+.goal-reward {
+    font-size: 1.2rem;
+    animation: bounce 0.5s;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
 </style>

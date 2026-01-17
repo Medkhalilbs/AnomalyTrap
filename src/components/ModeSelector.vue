@@ -4,17 +4,7 @@
       <button class="close-btn" @click="$emit('close')">✕</button>
       <h2 class="selector-title">Choose Your Challenge</h2>
 
-      <div class="tabs-container">
-        <button 
-            v-for="tab in tabs" 
-            :key="tab.id"
-            class="tab-btn"
-            :class="{ active: currentTab === tab.id }"
-            @click="currentTab = tab.id"
-        >
-            {{ tab.label }}
-        </button>
-      </div>
+      <!-- Tabs removed for cleaner UI -->
 
       <div class="modes-grid">
         <div
@@ -40,26 +30,8 @@ import { MODE_CONFIGS, GameMode, type GameModeValue } from '../types/modes';
 import { useGameStore, GameState } from '../store/gameStore';
 
 const store = useGameStore();
-const currentTab = ref('all');
-
-const tabs = [
-    { id: 'all', label: 'All' },
-    { id: 'logic', label: 'Logic' },
-    { id: 'word', label: 'Word' },
-    { id: 'memory', label: 'Memory' },
-    { id: 'mystery', label: 'Mystery' }
-];
-
 const filteredModes = computed(() => {
-    if (currentTab.value === 'all') return MODE_CONFIGS;
-    
-    return MODE_CONFIGS.filter(mode => {
-        if (currentTab.value === 'logic') return ([GameMode.ANOMALY_HUNT, GameMode.SEQUENCE, GameMode.CONTRADICTION] as string[]).includes(mode.id);
-        if (currentTab.value === 'word') return ([GameMode.WORD_TRAP, GameMode.RIDDLE, GameMode.CIPHER] as string[]).includes(mode.id);
-        if (currentTab.value === 'memory') return ([GameMode.MEMORY] as string[]).includes(mode.id);
-        if (currentTab.value === 'mystery') return ([GameMode.DETECTIVE] as string[]).includes(mode.id);
-        return true;
-    });
+    return MODE_CONFIGS;
 });
 
 defineEmits(['close']);
@@ -84,7 +56,8 @@ function selectMode(modeId: string) {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,15 +71,15 @@ function selectMode(modeId: string) {
 }
 
 .mode-selector {
-  width: 90%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow-y: auto;
-  background: var(--bg-color);
-  border-radius: 24px;
-  padding: 30px;
+  width: 95%;
+  max-width: 1000px;
+  height: 90vh; /* Fixed height for scroll internal */
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  padding: 0; /* Remove padding for edge-to-edge feel on mobile */
   position: relative;
-  animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes slideUp {
@@ -116,134 +89,141 @@ function selectMode(modeId: string) {
 
 .close-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: none;
+  top: 10px;
+  right: 10px;
+  background: white;
   border: none;
-  font-size: 2rem;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: 1.4rem;
   cursor: pointer;
-  color: var(--secondary-color);
-  opacity: 0.5;
-  transition: opacity 0.2s;
-}
-
-.close-btn:hover {
-  opacity: 1;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 .selector-title {
   font-size: 2rem;
   font-weight: 900;
-  color: var(--primary-color);
-  margin-bottom: 30px;
+  color: white;
+  margin: 20px 0;
   text-align: center;
+  text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  flex-shrink: 0;
 }
 
 .modes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 15px;
+  padding: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+  /* Hide scrollbar */
+  scrollbar-width: none;
+}
+
+.modes-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .mode-card {
-  background: white;
-  border: 4px solid;
-  border-radius: 16px;
-  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px 15px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
-  box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  transition: transform 0.2s, background 0.2s;
 }
 
 .mode-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 0 rgba(0,0,0,0.15);
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-5px);
 }
 
 .mode-card:active {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+  transform: scale(0.96);
+}
+
+/* Card color strip */
+.mode-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: currentColor; /* Uses border-color style */
+  opacity: 0.8;
+  border-radius: 20px 20px 0 0;
 }
 
 .mode-icon {
-  font-size: 3rem;
-  text-align: center;
-  margin-bottom: 10px;
+  font-size: 3.5rem;
+  margin-bottom: 15px;
+  filter: drop-shadow(0 0 10px rgba(0,0,0,0.2));
 }
 
 .mode-name {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 800;
-  color: #2c3e50;
+  color: white;
   text-align: center;
-  margin-bottom: 8px;
+  margin: 0 0 5px 0;
+  line-height: 1.2;
 }
 
 .mode-description {
-  font-size: 0.9rem;
-  color: #7f8c8d;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
   text-align: center;
-  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .mode-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: var(--primary-color);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-size: 0.7rem;
-  font-weight: 900;
-  letter-spacing: 1px;
-}
-
-.mode-badge.new {
-  background: #95a5a6;
-}
-
-.mode-badge.ready {
-  background: #2ecc71;
-  animation: pulse-badge 2s infinite;
-}
-
-@keyframes pulse-badge {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-@media (max-width: 600px) {
-  .modes-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-  }
-  
-  .mode-card {
-    padding: 15px;
-  }
-  
-  .mode-icon {
-    font-size: 2rem;
-  }
-  
-  .mode-name {
-    font-size: 1rem;
-  }
-  
-  .mode-description {
-    font-size: 0.8rem;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .mode-card {
-    background: #2c3e50;
-  }
-  
-  .mode-name {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #2ecc71;
     color: white;
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 900;
+}
+
+/* Landscape / Desktop tweaks */
+@media (min-width: 768px) {
+  .modes-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+    padding: 30px;
+  }
+  
+  .mode-card {
+    min-height: 220px;
+  }
+
+  .mode-icon {
+    font-size: 4.5rem;
+  }
+
+  .mode-name {
+    font-size: 1.4rem;
   }
 }
 </style>

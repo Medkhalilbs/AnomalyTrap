@@ -4,7 +4,7 @@ import type { RuleResult, LogicItemData } from '../game/rules/Rule';
 import { getThemeForScore, themes, type Theme } from '../utils/themes';
 import { sounds } from '../utils/sounds';
 import { GameMode, type GameModeValue } from '../types/modes';
-import { type Objective, DAILY_OBJECTIVES } from '../types/objectives';
+import { type Goal, GENERATE_DAILY_GOALS, LIFETIME_MILESTONES } from '../types/objectives';
 
 export const GameState = {
     MENU: 'MENU',
@@ -14,14 +14,6 @@ export const GameState = {
 } as const;
 
 export type GameStateValue = typeof GameState[keyof typeof GameState];
-
-export interface Achievement {
-    id: string;
-    name: string;
-    description: string;
-    unlocked: boolean;
-    icon: string;
-}
 
 export const useGameStore = defineStore('game', {
     state: () => ({
@@ -41,13 +33,7 @@ export const useGameStore = defineStore('game', {
         currentTheme: themes[0] as Theme,
         combo: 0,
         isShaking: false,
-        achievements: [
-            { id: 'first_win', name: 'Fresh Start', description: 'Complete level 1', unlocked: false, icon: '🌱' },
-            { id: 'boss_slayer', name: 'Boss Buster', description: 'Beat your first Boss Level', unlocked: false, icon: '⚔️' },
-            { id: 'puzzle_master', name: 'Puzzle Master', description: 'Reach Level 20', unlocked: false, icon: '🧠' },
-            { id: 'perfect_run', name: 'Perfect Run', description: 'Reach Level 20 without losing a life', unlocked: false, icon: '💎' },
-        ] as Achievement[],
-        currentObjective: { ...DAILY_OBJECTIVES[0] } as Objective,
+        activeGoals: [] as Goal[],
     }),
 
     actions: {
@@ -66,15 +52,14 @@ export const useGameStore = defineStore('game', {
                     this.score = finalScore;
                     this.isGameOver = true;
                     this.gameState = GameState.GAMEOVER;
-                    this.checkAchievements();
-                    this.checkObjective();
+                    this.checkGoals('gameplay', 1);
+                    this.saveGoals();
                 },
                 (newScore: number) => {
                     this.score = newScore;
                     this.highscore = Math.max(this.highscore, this.engine?.getHighscore() || 0);
                     this.currentTheme = getThemeForScore(this.score);
-                    this.checkAchievements();
-                    this.updateObjectiveProgress('score', this.score);
+                    this.checkGoals('score', this.score);
                 },
                 (lives: number) => {
                     this.lives = lives;
@@ -84,8 +69,7 @@ export const useGameStore = defineStore('game', {
                 }
             );
             this.highscore = this.engine.getHighscore();
-            this.loadAchievements();
-            this.loadObjective();
+            this.loadGoals();
         },
 
         startGame() {
@@ -93,7 +77,7 @@ export const useGameStore = defineStore('game', {
             this.gameState = GameState.PLAYING;
             this.isGameOver = false;
             this.engine?.start();
-            this.updateObjectiveProgress('gameplay', 1);
+            this.checkGoals('gameplay', 1); // Increment games played
         },
 
         tapItem(index: number) {
@@ -104,7 +88,7 @@ export const useGameStore = defineStore('game', {
                 sounds.playSuccess();
                 this.lastCorrect = true;
                 this.combo++;
-                this.updateObjectiveProgress('combo', this.combo);
+                this.checkGoals('combo', this.combo);
 
                 // Extra score based on combo
                 if (this.combo > 1) {
@@ -133,7 +117,7 @@ export const useGameStore = defineStore('game', {
             sounds.playMenuClick();
             this.gameState = GameState.MENU;
             this.isGameOver = false;
-            this.saveObjective();
+            this.saveGoals();
         },
 
         useHint() {
@@ -147,89 +131,99 @@ export const useGameStore = defineStore('game', {
             }, 1000);
         },
 
-        checkAchievements() {
-            if (!this.achievements || this.achievements.length < 4) return;
-
-            let changed = false;
-            if (this.score >= 1 && this.achievements[0] && !this.achievements[0].unlocked) {
-                this.achievements[0].unlocked = true;
-                changed = true;
-            }
-            if (this.score >= 5 && this.achievements[1] && !this.achievements[1].unlocked) {
-                this.achievements[1].unlocked = true;
-                changed = true;
-            }
-            if (this.score >= 20 && this.achievements[2] && !this.achievements[2].unlocked) {
-                this.achievements[2].unlocked = true;
-                changed = true;
-            }
-            if (this.score >= 20 && this.lives === 3 && this.achievements[3] && !this.achievements[3].unlocked) {
-                this.achievements[3].unlocked = true;
-                changed = true;
-            }
-
-            if (changed) {
-                this.saveAchievements();
-            }
+        addScore(amount: number) {
+            this.score += amount;
+            this.highscore = Math.max(this.highscore, this.score);
+            this.checkGoals('score', this.score);
         },
 
-        updateObjectiveProgress(type: string, value: number) {
-            if (this.currentObjective.completed) return;
+        endGame() {
+            this.isGameOver = true;
+            this.gameState = GameState.GAMEOVER;
+            this.checkGoals('gameplay', 1);
+            this.saveGoals();
+            sounds.playError(); // Or game over sound
+        },
 
-            if (this.currentObjective.type === type) {
-                if (type === 'gameplay') {
-                    this.currentObjective.current += value;
-                } else {
-                    this.currentObjective.current = Math.max(this.currentObjective.current, value);
+        checkGoals(type: string, value: number) {
+            this.activeGoals.forEach(goal => {
+                if (goal.completed) return;
+
+                if (goal.type === type) {
+                    if (type === 'gameplay' || (goal.frequency === 'lifetime' && type === 'score')) {
+                        // Cumulative types
+                        goal.current += value; // Note: for score updates on every change, this logic needs care. 
+                        // Actually, score comes in absolute values from engine callback.
+                        // Lifetime score should aggregate the *difference* or be handled at gameover.
+                        // For simplicity in this step, let's assume value passed for score is the current absolute score.
+                        // But for lifetime, we need to add the session score at end.
+                        // Let's adjust: checkGoals is called safely.
+
+                        if (goal.frequency === 'lifetime' && type === 'score') {
+                            // Lifetime score is updated only at GameOver or we track session accumulator.
+                            // To avoid double counting, let's handle lifetime score at game over specifically?
+                            // Or better: pass the *increment*?
+                            // For now, let's handle gameplay increments correctly (startGame passes 1).
+                        }
+                        else if (type === 'gameplay') {
+                            // Already += value
+                        }
+                    } else {
+                        // High-water mark types (combo, single game score)
+                        goal.current = Math.max(goal.current, value);
+                    }
+
+                    if (goal.current >= goal.target) {
+                        goal.completed = true;
+                        goal.current = goal.target;
+                        // Notification logic could go here
+                        this.saveGoals();
+                    }
                 }
-                this.checkObjective();
+            });
+            // Special handling for lifetime accumulated score, could be done at Game Over to be safe
+            if (type === 'score_accumulate') {
+                this.activeGoals.forEach(g => {
+                    if (g.frequency === 'lifetime' && g.type === 'score') {
+                        g.current += value;
+                        if (g.current >= g.target && !g.completed) {
+                            g.completed = true;
+                            g.current = g.target;
+                            this.saveGoals();
+                        }
+                    }
+                });
             }
         },
 
-        checkObjective() {
-            if (!this.currentObjective.completed && this.currentObjective.current >= this.currentObjective.target) {
-                this.currentObjective.completed = true;
-                this.currentObjective.current = this.currentObjective.target;
-                // Maybe play a sound or show notification
-                this.saveObjective();
-            }
+        // New helper to handle end-of-game accumulation
+        finalizeGameStats(sessionScore: number) {
+            this.checkGoals('score_accumulate', sessionScore);
+            this.saveGoals();
         },
 
-        saveAchievements() {
-            localStorage.setItem('outlier_achievements', JSON.stringify(this.achievements));
+        saveGoals() {
+            localStorage.setItem('outlier_goals', JSON.stringify(this.activeGoals));
         },
 
-        loadAchievements() {
-            const saved = localStorage.getItem('outlier_achievements');
+        loadGoals() {
+            const saved = localStorage.getItem('outlier_goals');
             if (saved) {
                 try {
                     const loaded = JSON.parse(saved);
-                    if (Array.isArray(loaded)) {
-                        loaded.forEach((savedAch: Achievement) => {
-                            const index = this.achievements.findIndex(a => a.id === savedAch.id);
-                            if (index !== -1 && this.achievements[index]) {
-                                (this.achievements[index] as Achievement).unlocked = savedAch.unlocked;
-                            }
-                        });
+                    // Merge with new structure if needed, or simple replace
+                    // Basic validation
+                    if (Array.isArray(loaded) && loaded.length > 0) {
+                        this.activeGoals = loaded;
+                    } else {
+                        this.activeGoals = [...GENERATE_DAILY_GOALS(), ...LIFETIME_MILESTONES];
                     }
                 } catch (e) {
-                    console.error('Failed to load achievements', e);
+                    console.error('Failed to load goals', e);
+                    this.activeGoals = [...GENERATE_DAILY_GOALS(), ...LIFETIME_MILESTONES];
                 }
-            }
-        },
-
-        saveObjective() {
-            localStorage.setItem('outlier_objective', JSON.stringify(this.currentObjective));
-        },
-
-        loadObjective() {
-            const saved = localStorage.getItem('outlier_objective');
-            if (saved) {
-                try {
-                    this.currentObjective = JSON.parse(saved);
-                } catch (e) {
-                    console.error('Failed to load objective', e);
-                }
+            } else {
+                this.activeGoals = [...GENERATE_DAILY_GOALS(), ...LIFETIME_MILESTONES];
             }
         }
     },

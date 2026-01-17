@@ -1,19 +1,22 @@
 import { getRandomInt, getRandomElement } from '../../utils/random';
 
 export interface MemoryChallenge {
+    type: 'grid' | 'sequence';
     grid: string[][];
-    questionPosition: { row: number; col: number };
-    options: string[];
-    correctAnswer: string;
+    // Grid Memory specific
+    questionPosition?: { row: number; col: number };
+    options?: string[];
+    correctAnswer?: string;
+    // Sequence Memory specific
+    sequence?: { row: number; col: number }[];
 }
 
 const SHAPES = ['🔴', '🔵', '🟢', '🟡', '🟣', '⭐', '❤️', '⚡'];
 
 export class MemoryGenerator {
     generateChallenge(difficulty: number): MemoryChallenge {
-        // 20% chance for a Sequence Memory challenge
-        // But only if difficulty is high enough (e.g. > 3) to not overwhelm new players
-        if (difficulty > 3 && Math.random() < 0.2) {
+        // 40% chance for Sequence Memory if difficulty > 2
+        if (difficulty > 2 && Math.random() < 0.4) {
             return this.generateSequenceMemory(difficulty);
         }
 
@@ -47,6 +50,7 @@ export class MemoryGenerator {
         const options = [correctAnswer, ...wrongOptions].sort(() => Math.random() - 0.5);
 
         return {
+            type: 'grid',
             grid,
             questionPosition: { row: questionRow, col: questionCol },
             options,
@@ -55,10 +59,31 @@ export class MemoryGenerator {
     }
 
     private generateSequenceMemory(difficulty: number): MemoryChallenge {
-        // This is a dummy implementation to structure the code.
-        // In a real sequence memory, we'd need temporal display logic in the Vue component.
-        // For now, we'll return a grid memory but with a different "flavor" if possible,
-        // or just fallback to grid until UI supports sequence playback.
-        return this.generateGridMemory(difficulty);
+        // Grid size can follow standard scaling
+        let gridSize = 3;
+        if (difficulty > 5) gridSize = 4;
+        if (difficulty > 10) gridSize = 5;
+
+        // Sequence length increases with difficulty
+        const baseLength = 3;
+        const length = Math.min(baseLength + Math.floor(difficulty / 2), 10);
+
+        const sequence: { row: number; col: number }[] = [];
+
+        for (let i = 0; i < length; i++) {
+            sequence.push({
+                row: getRandomInt(0, gridSize - 1),
+                col: getRandomInt(0, gridSize - 1)
+            });
+        }
+
+        // Create an empty grid (or simple background grid)
+        const grid: string[][] = Array(gridSize).fill(Array(gridSize).fill('⬜'));
+
+        return {
+            type: 'sequence',
+            grid,
+            sequence
+        };
     }
 }

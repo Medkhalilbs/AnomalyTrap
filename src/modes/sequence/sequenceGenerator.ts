@@ -8,161 +8,142 @@ export interface SequenceChallenge {
 }
 
 export class SequenceGenerator {
-    generateChallenge(_difficulty: number): SequenceChallenge {
-        const type = getRandomElement(['numeric', 'visual', 'symbolic'] as const) ?? 'numeric';
+    generateChallenge(difficulty: number): SequenceChallenge {
+        // Higher difficulty -> higher chance of complex math or visuals
+        const roll = Math.random();
 
-        switch (type) {
-            case 'numeric':
-                return this.generateNumericSequence();
-            case 'visual':
-                return this.generateVisualSequence();
-            case 'symbolic':
-                return this.generateSymbolicSequence();
-            default:
-                return this.generateNumericSequence();
-        }
+        if (roll < 0.6) return this.generateMathSequence(difficulty);
+        if (roll < 0.8) return this.generateVisualSequence(difficulty);
+        return this.generateSymbolicSequence(difficulty);
     }
 
-    private generateNumericSequence(): SequenceChallenge {
-        const patterns = [
-            // Simple addition
-            () => {
-                const start = getRandomInt(1, 10);
-                const step = getRandomInt(1, 5);
-                const sequence = [start, start + step, start + step * 2, start + step * 3];
-                const next = start + step * 4;
-                return { sequence, next };
-            },
-            // Multiplication
-            () => {
-                const start = getRandomInt(2, 5);
-                const mult = 2;
-                const sequence = [start, start * mult, start * mult * mult, start * mult * mult * mult];
-                const next = start * mult * mult * mult * mult;
-                return { sequence, next };
-            },
-            // Fibonacci-like
-            () => {
-                const a = getRandomInt(1, 3);
-                const b = getRandomInt(2, 4);
-                const sequence = [a, b, a + b, a + 2 * b];
-                const next = 2 * a + 3 * b;
-                return { sequence, next };
-            },
-            // Subtraction
-            () => {
-                const start = getRandomInt(20, 50);
-                const step = getRandomInt(2, 5);
-                const sequence = [start, start - step, start - step * 2, start - step * 3];
-                const next = start - step * 4;
-                return { sequence, next };
-            },
-            // Squares
-            () => {
-                const start = getRandomInt(1, 5);
-                const sequence = [start ** 2, (start + 1) ** 2, (start + 2) ** 2, (start + 3) ** 2];
-                const next = (start + 4) ** 2;
-                return { sequence, next };
-            },
-            // Primes (approximate for simplicity in generation, fixed small set)
-            () => {
-                const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37];
-                const startIdx = getRandomInt(0, primes.length - 5);
-                const sequence = primes.slice(startIdx, startIdx + 4);
-                const next = primes[startIdx + 4] ?? 41;
-                return { sequence, next };
-            },
-            // Binary Powers
-            () => {
-                const start = getRandomInt(1, 4);
-                const sequence = [Math.pow(2, start), Math.pow(2, start + 1), Math.pow(2, start + 2), Math.pow(2, start + 3)];
-                const next = Math.pow(2, start + 4);
-                return { sequence, next };
+    private generateMathSequence(difficulty: number): SequenceChallenge {
+        // Types: 0=Linear (ax+b), 1=Quadratic (n^2), 2=Exponential (n^x), 3=Fibonacci
+        const type = difficulty < 3 ? 0 : getRandomInt(0, Math.min(difficulty, 3));
+        let sequence: number[] = [];
+        let next = 0;
+
+        if (type === 0) { // Linear: ax + b
+            const a = getRandomInt(1, 3 + difficulty);
+            const b = getRandomInt(0, 10 + difficulty * 2);
+            for (let n = 1; n < 5; n++) sequence.push(a * n + b);
+            next = a * 5 + b;
+        } else if (type === 1) { // Quadratic: n^2 + b or an^2
+            const b = getRandomInt(0, 5);
+            for (let n = 1; n < 5; n++) sequence.push(n * n + b);
+            next = 5 * 5 + b;
+        } else if (type === 2) { // Exponential: a * r^n
+            const a = getRandomInt(1, 2);
+            const r = 2; // Keep simple for now
+            for (let n = 0; n < 4; n++) sequence.push(a * Math.pow(r, n));
+            next = a * Math.pow(r, 4);
+        } else { // Fibonacci-ish
+            const a = getRandomInt(1, 5);
+            const b = getRandomInt(a, a + 5);
+            sequence = [a, b];
+            for (let i = 2; i < 4; i++) sequence.push(sequence[i - 1]! + sequence[i - 2]!);
+            next = sequence[3]! + sequence[2]!;
+        }
+
+        // Generate distinct options
+        const correctAnswer = next;
+        const optionsSet = new Set<number>();
+        optionsSet.add(correctAnswer);
+
+        while (optionsSet.size < 4) {
+            const offset = getRandomInt(-5, 5);
+            if (offset !== 0) {
+                optionsSet.add(correctAnswer + offset);
+            } else {
+                optionsSet.add(correctAnswer + 10);
             }
-        ];
-
-        const pattern = getRandomElement(patterns) ?? patterns[0];
-        const { sequence, next } = pattern();
-
-        // Generate wrong options
-        const options = [
-            next,
-            next + getRandomInt(1, 4),
-            next - getRandomInt(1, 4),
-            next * 2 + 1 // Ensure some variance
-        ].sort(() => Math.random() - 0.5);
-
-        // Deduplicate options
-        const uniqueOptions = [...new Set(options)];
-        while (uniqueOptions.length < 4) {
-            uniqueOptions.push(next + getRandomInt(10, 20));
         }
 
         return {
             sequence,
-            options: uniqueOptions.sort(() => Math.random() - 0.5),
-            correctAnswer: next,
+            options: Array.from(optionsSet).sort(() => Math.random() - 0.5),
+            correctAnswer,
             type: 'numeric'
         };
     }
 
-    private generateVisualSequence(): SequenceChallenge {
-        const shapes = ['🔴', '🔵', '🟢', '🟡', '🟣'];
-        const types = ['repeat', 'rotate'];
-        const type = getRandomElement(types) ?? 'repeat';
+    private generateVisualSequence(difficulty: number): SequenceChallenge {
+        // TODO: Expand this with canvas generation if possible, but for now robust strings
+        const shapes = ['🔴', '🔵', '🟢', '🟡', '🟣', '⬛', '⬜'];
+        const subShapes = shapes.slice(0, 3 + Math.min(difficulty, 4));
 
-        if (type === 'rotate') {
-            const arrows = ['⬆️', '➡️', '⬇️', '⬅️'];
-            // Rotation pattern: Up, Right, Down, Left...
-            const startIdx = getRandomInt(0, 3);
-            const sequence = [
-                arrows[startIdx % 4],
-                arrows[(startIdx + 1) % 4],
-                arrows[(startIdx + 2) % 4],
-                arrows[(startIdx + 3) % 4]
-            ];
-            const next = arrows[(startIdx + 4) % 4] ?? '⬆️';
-            const options = [...arrows].sort(() => Math.random() - 0.5);
+        // Pattern: ABAB, AABB, ABC...
+        const pType = getRandomInt(0, 2);
+        let seq: string[] = [];
+        let next = '';
 
-            return {
-                sequence: sequence as string[],
-                options,
-                correctAnswer: next,
-                type: 'visual'
-            };
+        if (pType === 0) { // Repeat 1-2
+            const s1 = getRandomElement(subShapes)!;
+            const s2 = getRandomElement(subShapes)!;
+            seq = [s1, s2, s1, s2];
+            next = s1;
+        } else if (pType === 1) { // Cycle
+            // A B C D ...
+            // start random
+            const start = getRandomInt(0, subShapes.length - 1);
+            for (let i = 0; i < 4; i++) seq.push(subShapes[(start + i) % subShapes.length]!);
+            next = subShapes[(start + 4) % subShapes.length]!;
+        } else {
+            // AABB
+            const s1 = getRandomElement(subShapes)!;
+            const s2 = getRandomElement(subShapes)!;
+            seq = [s1, s1, s2, s2];
+            next = s1; // Starting new cycle? Or maybe A? Let's say it loops
+            // Actually AABB pattern implies next is A (new pair) or C (if expanding).
+            // Let's stick to simple Cycle for clarity on mobile
+            const start = getRandomInt(0, subShapes.length - 1);
+            for (let i = 0; i < 4; i++) seq.push(subShapes[(start + i) % subShapes.length]!);
+            next = subShapes[(start + 4) % subShapes.length]!;
         }
 
-        const patternLength = 3;
-
-        // Create repeating pattern
-        const pattern: string[] = [];
-        for (let i = 0; i < patternLength; i++) {
-            pattern.push(shapes[i] ?? '🔴');
+        const optionsSet = new Set<string>();
+        optionsSet.add(next);
+        while (optionsSet.size < 4) {
+            optionsSet.add(getRandomElement(shapes)!);
         }
-
-        const sequence: string[] = [...pattern, ...pattern];
-        const next: string = pattern[0] ?? '🔴';
-
-        const options: string[] = [next, shapes[3] ?? '🟡', shapes[4] ?? '🟣', '⚫'].sort(() => Math.random() - 0.5);
 
         return {
-            sequence,
-            options,
+            sequence: seq,
+            options: Array.from(optionsSet).sort(() => Math.random() - 0.5),
             correctAnswer: next,
             type: 'visual'
         };
     }
 
-    private generateSymbolicSequence(): SequenceChallenge {
-        const symbols = ['⭐', '❤️', '⚡', '🔥', '💎'];
-        const sequence: string[] = [symbols[0] ?? '⭐', symbols[1] ?? '❤️', symbols[0] ?? '⭐', symbols[1] ?? '❤️'];
-        const next: string = symbols[0] ?? '⭐';
+    private generateSymbolicSequence(difficulty: number): SequenceChallenge {
+        // Logic operations: AND, OR concepts depicted by combined symbols?
+        // Or simple rotation
+        const base = ['⬆️', '↗️', '➡️', '↘️', '⬇️', '↙️', '⬅️', '↖️'];
+        const step = getRandomElement([1, 2, -1, 4])!; // Rotation amount (45deg steps)
 
-        const options: string[] = [next, symbols[2] ?? '⚡', symbols[3] ?? '🔥', symbols[4] ?? '💎'].sort(() => Math.random() - 0.5);
+        const startIdx = getRandomInt(0, base.length - 1);
+        const seq: string[] = [];
+
+        for (let i = 0; i < 4; i++) {
+            // Handle negative modulo correctly
+            let idx = (startIdx + (i * step)) % base.length;
+            if (idx < 0) idx += base.length;
+            seq.push(base[idx]!);
+        }
+
+        let nextIdx = (startIdx + (4 * step)) % base.length;
+        if (nextIdx < 0) nextIdx += base.length;
+        const next = base[nextIdx]!;
+
+        const optionsSet = new Set<string>();
+        optionsSet.add(next);
+        while (optionsSet.size < 4) {
+            optionsSet.add(getRandomElement(base)!);
+        }
 
         return {
-            sequence,
-            options,
+            sequence: seq,
+            options: Array.from(optionsSet).sort(() => Math.random() - 0.5),
             correctAnswer: next,
             type: 'symbolic'
         };

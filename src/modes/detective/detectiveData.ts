@@ -104,6 +104,64 @@ const TEMPLATES = [
             }
         ],
         clue: "The substance was identified as Oleander, a toxic garden plant."
+    },
+    {
+        title: "The Stolen Prototype",
+        story: "A revolutionary microchip vanished from the lab. Only authorized personnel were inside.",
+        culpritId: "intern",
+        suspects: [
+            {
+                id: "scientist",
+                name: "Dr. Volt",
+                alibi: "I was calibrating the lasers in the clean room.",
+                statement: "I saw the intern near the safe earlier.",
+                isCulprit: false
+            },
+            {
+                id: "intern",
+                name: "Gary the Intern",
+                alibi: "I was getting coffee for everyone.",
+                statement: "I don't even know the code to the safe!",
+                isCulprit: true
+            },
+            {
+                id: "ceo",
+                name: "Mr. Sterling",
+                alibi: "I was on a conference call.",
+                statement: "Why would I steal my own invention?",
+                isCulprit: false
+            }
+        ],
+        clue: "Security logs show a failed access attempt with the code '1234' - the Intern's birthday."
+    },
+    {
+        title: "The Midnight Hacker",
+        story: "The server room was breached at midnight. No physical entry, but local access was used.",
+        culpritId: "janitor",
+        suspects: [
+            {
+                id: "admin",
+                name: "Alice the Admin",
+                alibi: "I was asleep at home.",
+                statement: "My logs show the terminal in the mop room was used.",
+                isCulprit: false
+            },
+            {
+                id: "janitor",
+                name: "Bob the Janitor",
+                alibi: "I was cleaning the floors.",
+                statement: "I don't know computers, I just plugged in my vacuum.",
+                isCulprit: true
+            },
+            {
+                id: "guard",
+                name: "Officer Mike",
+                alibi: "I was at the front desk.",
+                statement: "Nobody came in or out after 10 PM.",
+                isCulprit: false
+            }
+        ],
+        clue: "The 'hack' was actually a power surge from a vacuum cleaner plugged into the server UPS."
     }
 ];
 

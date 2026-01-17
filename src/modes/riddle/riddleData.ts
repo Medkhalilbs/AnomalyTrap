@@ -101,6 +101,81 @@ const RIDDLES = [
         q: "What belongs to you, but other people use it more than you?",
         a: "Name",
         wrong: ["Money", "Car", "House"]
+    },
+    {
+        q: "I have cities, but no houses. I have mountains, but no trees. I have water, but no fish. What am I?",
+        a: "Map",
+        wrong: ["Globe", "Dream", "Picture"]
+    },
+    {
+        q: "I am always hungry, I must always be fed. The finger I lick will soon turn red. What am I?",
+        a: "Fire",
+        wrong: ["Baby", "Oven", "Rust"]
+    },
+    {
+        q: "The person who makes it has no need of it; the person who buys it has no use for it. The person who uses it can neither see nor feel it. What is it?",
+        a: "Coffin",
+        wrong: ["Cradle", "Gift", "Trap"]
+    },
+    {
+        q: "I have a neck but no head. I have two arms but no hands. What am I?",
+        a: "Shirt",
+        wrong: ["Bottle", "Ghost", "Clock"]
+    },
+    {
+        q: "If you drop me I'm sure to crack, but give me a smile and I'll always smile back. What am I?",
+        a: "Mirror",
+        wrong: ["Egg", "Glass", "Friend"]
+    },
+    {
+        q: "I can fly but have no wings. I can cry but I have no eyes. Wherever I go, darkness follows me. What am I?",
+        a: "Cloud",
+        wrong: ["Bat", "Wind", "Ghost"]
+    },
+    {
+        q: "What has 13 hearts, but no other organs?",
+        a: "Deck of Cards",
+        wrong: ["Octopus", "Hospital", "Monster"]
+    },
+    {
+        q: "It stalks the countryside with ears that can't hear. What is it?",
+        a: "Corn",
+        wrong: ["Rabbit", "Wolf", "Silo"]
+    },
+    {
+        q: "I am an odd number. Take away a letter and I become even. What number am I?",
+        a: "Seven",
+        wrong: ["One", "Nine", "Five"]
+    },
+    {
+        q: "The more you dry, the wetter I get. What am I?",
+        a: "Towel",
+        wrong: ["Sponge", "Water", "Soap"]
+    },
+    {
+        q: "I have no life, but I can die. What am I?",
+        a: "Battery",
+        wrong: ["Ghost", "Idea", "Silence"]
+    },
+    {
+        q: "People make me, save me, change me, raise me. What am I?",
+        a: "Money",
+        wrong: ["Child", "House", "Mind"]
+    },
+    {
+        q: "What breaks yet never falls, and what falls yet never breaks?",
+        a: "Day and Night",
+        wrong: ["Glass and Rain", "Heart and Star", "Stick and Stone"]
+    },
+    {
+        q: "I turn polar bears white and I will make you cry. I make guys have to pee and girls comb their hair. I make celebrities look prefer stupid and normal people look like celebrities. I turn pancakes brown and make your champane bubble. If you sqeeze me, I'll pop. If you look at me, you'll pop. Can you answer this riddle?",
+        a: "No",
+        wrong: ["Yes", "Time", "Life"]
+    },
+    {
+        q: "What moves faster: Heat or Cold?",
+        a: "Heat",
+        wrong: ["Cold", "Neither", "Light"]
     }
 ];
 

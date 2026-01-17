@@ -5,17 +5,18 @@ export interface CipherChallenge {
     encrypted: string;
     options: string[];
     correctAnswer: string;
-    type: 'caesar' | 'reverse' | 'atbash';
+    type: 'caesar' | 'reverse' | 'atbash' | 'substitution' | 'railfence';
 }
 
 const WORDS = [
     'SECRET', 'CODE', 'CIPHER', 'DETECT', 'HIDDEN', 'MESSAGE', 'PUZZLE', 'SOLVE', 'MYSTERY', 'ESCAPE',
-    'AGENT', 'BRAIN', 'SMART', 'LOGIC', 'FOCUS', 'HUNT', 'TRAP', 'FIND', 'GAME', 'PLAY'
+    'AGENT', 'BRAIN', 'SMART', 'LOGIC', 'FOCUS', 'HUNT', 'TRAP', 'FIND', 'GAME', 'PLAY',
+    'ENIGMA', 'CRYPTIC', 'LOCKED', 'UNLOCK', 'KEYWORD', 'PATTERN', 'SEQUENCE', 'SYMBOL', 'ANOMALY', 'SHADOW'
 ];
 
 export class CipherGenerator {
     generateChallenge(_difficulty: number): CipherChallenge {
-        const type = getRandomElement(['caesar', 'reverse', 'atbash', 'substitution'] as const) ?? 'caesar';
+        const type = getRandomElement(['caesar', 'reverse', 'atbash', 'substitution', 'railfence'] as const) ?? 'caesar';
         const word = getRandomElement(WORDS) ?? 'SECRET';
 
         switch (type) {
@@ -27,6 +28,8 @@ export class CipherGenerator {
                 return this.generateAtbash(word);
             case 'substitution':
                 return this.generateSubstitution(word);
+            case 'railfence':
+                return this.generateRailFence(word);
             default:
                 return this.generateCaesar(word);
         }
@@ -94,6 +97,41 @@ export class CipherGenerator {
         };
     }
 
+    private generateRailFence(word: string): CipherChallenge {
+        // 2-rail fence (Zig Zag)
+        // H E L L O
+        //  E L O 
+        // H L O = Top rail, E L = Bottom rail ?
+        // Usually:
+        // H . L . O
+        // . E . L .
+        // Encrypted: HLO EL
+
+        let rail1 = "";
+        let rail2 = "";
+        for (let i = 0; i < word.length; i++) {
+            if (i % 2 === 0) rail1 += word[i];
+            else rail2 += word[i];
+        }
+        const encrypted = rail1 + rail2;
+
+        const options = [word];
+        while (options.length < 4) {
+            const wrongWord = getRandomElement(WORDS) ?? 'CODE';
+            if (!options.includes(wrongWord)) {
+                options.push(wrongWord);
+            }
+        }
+
+        return {
+            description: "Zig-Zag Cipher (Read alternating letters)",
+            encrypted,
+            options: options.sort(() => Math.random() - 0.5),
+            correctAnswer: word,
+            type: 'railfence'
+        };
+    }
+
     private caesarCipher(str: string, shift: number): string {
         return str.replace(/[A-Z]/g, char => {
             const code = char.charCodeAt(0);
@@ -138,7 +176,7 @@ export class CipherGenerator {
             encrypted,
             options: options.sort(() => Math.random() - 0.5),
             correctAnswer: word,
-            type: 'substitution' as any
+            type: 'substitution'
         };
     }
 }
