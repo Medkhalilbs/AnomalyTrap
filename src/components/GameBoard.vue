@@ -9,7 +9,7 @@
       </button>
 
       <div class="iq-display">
-        <span class="iq-label">ESTIMATED IQ</span>
+        <span class="iq-label">{{ t('estimatedIQ') }}</span>
         <span class="iq-value">{{ Math.round(store.estimatedIQ) }}</span>
         <div class="progress-track">
           <div class="progress-bar" :style="{ width: `${((store.score % 5) / 5) * 100}%` }"></div>
@@ -31,7 +31,7 @@
     </div>
 
     <div class="score-display">
-      <div class="level-indicator" :class="{ 'boss-text': store.levelText.includes('BOSS') }">
+      <div class="level-indicator">
         {{ store.levelText }}
       </div>
       <div class="score-row">
@@ -66,8 +66,13 @@ import { useGameStore } from '../store/gameStore';
 import LogicItem from './LogicItem.vue';
 import FeedbackOverlay from './FeedbackOverlay.vue';
 import LivesDisplay from './LivesDisplay.vue';
+import { translations } from '../utils/i18n';
 
 const store = useGameStore();
+
+function t(key: keyof typeof translations['en']) {
+    return translations[store.language][key];
+}
 
 function handleTap(index: number) {
   store.tapItem(index);

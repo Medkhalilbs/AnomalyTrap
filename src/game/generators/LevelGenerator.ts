@@ -31,22 +31,17 @@ export class LevelGenerator {
 
     generate(difficulty: number, score: number): any {
         const level = score + 1;
-        const isBoss = level % 5 === 0;
 
         // Determine item count
         let itemCount = getRandomInt(5, 7);
-        if (isBoss) {
-            itemCount = Math.min(20, 9 + (difficulty * 2));
-        } else if (level > 5) {
+        if (level > 5) {
             itemCount = getRandomInt(6, 8);
         }
 
         // Rule selection
         let selectedRule: GameRule;
 
-        if (isBoss) {
-            selectedRule = this.rules[this.rules.length - 1] as GameRule; // Composite
-        } else if (level < 2) {
+        if (level < 2) {
             // Level 1: Basics only
             selectedRule = (getRandomElement(this.rules.slice(0, 3)) || this.rules[0]) as GameRule;
         } else if (level < 5) {
@@ -67,10 +62,6 @@ export class LevelGenerator {
                 const decoyRule = getRandomElement(this.rules.filter(r => r !== selectedRule));
                 result.ruleDescription = `⚠️ TRUST NO ONE: ${decoyRule?.name}`;
             }
-        }
-
-        if (isBoss) {
-            result.ruleDescription = `BOSS: ${result.ruleDescription}`;
         }
 
         return result;

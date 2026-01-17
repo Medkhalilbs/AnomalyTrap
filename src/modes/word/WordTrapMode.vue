@@ -23,8 +23,8 @@
       </div>
 
       <div v-if="showResult" class="result-message">
-        <span v-if="isCorrect" class="correct-msg">✓ Correct!</span>
-        <span v-else class="wrong-msg">✗ Wrong! The answer was {{ currentChallenge.correctAnswer }}</span>
+        <span v-if="isCorrect" class="correct-msg">✓ {{ t('correct') }}</span>
+        <span v-else class="wrong-msg">✗ {{ t('wrong') }} {{ t('answerWas') }} {{ currentChallenge.correctAnswer }}</span>
       </div>
     </div>
   </div>
@@ -50,11 +50,12 @@ const showResult = ref(false);
 const isCorrect = ref(false);
 
 function getBadgeText(type: string): string {
+  const m = t('modes') as any;
   switch (type) {
-    case 'anagram': return '🔤 ANAGRAM';
-    case 'oddOneOut': return '🎯 ODD ONE OUT';
-    case 'category': return '📂 CATEGORY';
-    default: return 'WORD PUZZLE';
+    case 'anagram': return `🔤 ${m.anagram}`;
+    case 'oddOneOut': return `🎯 ${m.oddOneOut}`;
+    case 'category': return `📂 ${m.category}`;
+    default: return `🧩 ${m.wordPuzzle}`;
   }
 }
 

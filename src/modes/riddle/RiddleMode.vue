@@ -23,8 +23,8 @@
       </div>
 
       <div v-if="showResult" class="result-message">
-        <span v-if="isCorrect" class="correct-msg">✓ Correct!</span>
-        <span v-else class="wrong-msg">✗ Wrong! The answer was {{ currentChallenge.correctAnswer }}</span>
+        <span v-if="isCorrect" class="correct-msg">✓ {{ t('correct') }}</span>
+        <span v-else class="wrong-msg">✗ {{ t('wrong') }} {{ t('answerWas') }} {{ currentChallenge.correctAnswer }}</span>
       </div>
     </div>
   </div>

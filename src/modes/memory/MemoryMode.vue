@@ -10,14 +10,14 @@
       
       <!-- INSTRUCTIONS / STATUS -->
       <h2 class="challenge-title" v-if="currentChallenge.type === 'grid'">
-        <span v-if="phase === 'memorize'">Memorize the grid! ({{ countdown }}s)</span>
-        <span v-else-if="phase === 'question'">What was here? ({{ currentChallenge.questionPosition!.row + 1 }}, {{ currentChallenge.questionPosition!.col + 1 }})</span>
-        <span v-else-if="phase === 'result'">{{ isCorrect ? 'Correct!' : 'Wrong!' }}</span>
+        <span v-if="phase === 'memorize'">{{ t('memorizeGrid') }} ({{ countdown }}s)</span>
+        <span v-else-if="phase === 'question'">{{ t('whatWasHere') }} ({{ currentChallenge.questionPosition!.row + 1 }}, {{ currentChallenge.questionPosition!.col + 1 }})</span>
+        <span v-else-if="phase === 'result'">{{ isCorrect ? t('correct') : t('wrong') }}</span>
       </h2>
       <h2 class="challenge-title" v-else>
-        <span v-if="phase === 'watch'">Watch the pattern...</span>
-        <span v-else-if="phase === 'repeat'">Repeat the pattern!</span>
-        <span v-else-if="phase === 'result'">{{ isCorrect ? 'Sequence Complete!' : 'Wrong Step!' }}</span>
+        <span v-if="phase === 'watch'">{{ t('watchPattern') }}</span>
+        <span v-else-if="phase === 'repeat'">{{ t('repeatPattern') }}</span>
+        <span v-else-if="phase === 'result'">{{ isCorrect ? t('sequenceComplete') : t('wrongStep') }}</span>
       </h2>
 
       <!-- GRID DISPLAY -->
@@ -66,10 +66,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useGameStore, GameState } from '../../store/gameStore';
-import { MemoryGenerator, type MemoryChallenge } from './memoryGenerator';
+import { translations } from '../../utils/i18n';
 
 const store = useGameStore();
 const generator = new MemoryGenerator();
+
+function t(key: keyof typeof translations['en']) {
+    return translations[store.language][key];
+}
 
 // State
 const score = ref(0);

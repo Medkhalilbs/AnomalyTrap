@@ -33,10 +33,10 @@
     <div class="feedback-overlay" v-if="showResult">
       <div class="feedback-content">
         <div class="feedback-icon">{{ isCorrect ? '🕵️‍♂️' : '❌' }}</div>
-        <h2>{{ isCorrect ? 'CASE CLOSED' : 'WRONG SUSPECT' }}</h2>
-        <p v-if="!isCorrect">The real culprit escaped!</p>
+        <h2>{{ isCorrect ? t('caseClosed') : t('wrongSuspect') }}</h2>
+        <p v-if="!isCorrect">{{ t('realCulpritEscaped') }}</p>
         <button class="next-btn" @click="nextLevel">
-          {{ isCorrect ? 'NEXT CASE' : 'TRY AGAIN' }}
+          {{ isCorrect ? t('nextCase') : t('tryAgain') }}
         </button>
       </div>
     </div>
