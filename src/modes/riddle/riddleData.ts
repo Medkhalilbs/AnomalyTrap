@@ -56,6 +56,51 @@ const RIDDLES = [
         q: "What is so fragile that saying its name breaks it?",
         a: "Silence",
         wrong: ["Glass", "Bubble", "Ice"]
+    },
+    {
+        q: "The more you take, the more you leave behind. What am I?",
+        a: "Footsteps",
+        wrong: ["Time", "Money", "Memories"]
+    },
+    {
+        q: "What has many keys but can't open a single lock?",
+        a: "Piano",
+        wrong: ["Map", "Computer", "Jail"]
+    },
+    {
+        q: "What has one eye, but can't see?",
+        a: "Needle",
+        wrong: ["Cyclops", "Storm", "Potato"]
+    },
+    {
+        q: "What can be broken, but is never held?",
+        a: "Promise",
+        wrong: ["Glass", "Silence", "Record"]
+    },
+    {
+        q: "What goes up but never comes down?",
+        a: "Age",
+        wrong: ["Balloon", "Smoke", "Bird"]
+    },
+    {
+        q: "What gets wet while drying?",
+        a: "Towel",
+        wrong: ["Sponge", "Rain", "Fish"]
+    },
+    {
+        q: "I have branches, but no fruit, trunk or leaves. What am I?",
+        a: "Bank",
+        wrong: ["River", "Library", "Family"]
+    },
+    {
+        q: "What begins with T, ends with T, and has T in it?",
+        a: "Teapot",
+        wrong: ["Tent", "Target", "Tomato"]
+    },
+    {
+        q: "What belongs to you, but other people use it more than you?",
+        a: "Name",
+        wrong: ["Money", "Car", "House"]
     }
 ];
 

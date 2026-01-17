@@ -8,10 +8,10 @@ export interface WordChallenge {
 }
 
 const WORD_CATEGORIES = {
-    fruits: ['Apple', 'Banana', 'Orange', 'Grape', 'Mango', 'Peach', 'Lemon', 'Cherry', 'Kiwi', 'Melon'],
-    animals: ['Dog', 'Cat', 'Lion', 'Tiger', 'Bear', 'Wolf', 'Fox', 'Elephant', 'Giraffe', 'Zebra', 'Monkey', 'Rabbit'],
-    colors: ['Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange', 'Pink', 'Brown', 'Black', 'White', 'Cyan', 'Magenta'],
-    countries: ['France', 'Spain', 'Italy', 'Japan', 'Brazil', 'Canada', 'Mexico', 'Germany', 'China', 'India', 'Australia', 'Egypt'],
+    fruits: ['Apple', 'Banana', 'Orange', 'Grape', 'Mango', 'Peach', 'Lemon', 'Cherry', 'Kiwi', 'Melon', 'Pear', 'Plum', 'Fig', 'Lime', 'Berry'],
+    animals: ['Dog', 'Cat', 'Lion', 'Tiger', 'Bear', 'Wolf', 'Fox', 'Elephant', 'Giraffe', 'Zebra', 'Monkey', 'Rabbit', 'Deer', 'Panda', 'Koala', 'Rhino'],
+    colors: ['Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange', 'Pink', 'Brown', 'Black', 'White', 'Cyan', 'Magenta', 'Teal', 'Indigo', 'Violet'],
+    countries: ['France', 'Spain', 'Italy', 'Japan', 'Brazil', 'Canada', 'Mexico', 'Germany', 'China', 'India', 'Australia', 'Egypt', 'USA', 'Russia', 'Peru'],
     sports: ['Soccer', 'Tennis', 'Basketball', 'Baseball', 'Hockey', 'Golf', 'Swimming', 'Volleyball', 'Rugby', 'Cricket'],
     vehicles: ['Car', 'Bus', 'Train', 'Plane', 'Boat', 'Bike', 'Truck', 'Submarine', 'Helicopter', 'Scooter'],
     planets: ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Earth'],

@@ -15,7 +15,7 @@ const WORDS = [
 
 export class CipherGenerator {
     generateChallenge(_difficulty: number): CipherChallenge {
-        const type = getRandomElement(['caesar', 'reverse', 'atbash'] as const) ?? 'caesar';
+        const type = getRandomElement(['caesar', 'reverse', 'atbash', 'substitution'] as const) ?? 'caesar';
         const word = getRandomElement(WORDS) ?? 'SECRET';
 
         switch (type) {
@@ -25,6 +25,8 @@ export class CipherGenerator {
                 return this.generateReverse(word);
             case 'atbash':
                 return this.generateAtbash(word);
+            case 'substitution':
+                return this.generateSubstitution(word);
             default:
                 return this.generateCaesar(word);
         }
@@ -104,5 +106,39 @@ export class CipherGenerator {
             const code = char.charCodeAt(0);
             return String.fromCharCode(90 - (code - 65));
         });
+    }
+
+    private generateSubstitution(word: string): CipherChallenge {
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        const shuffled = [...alphabet].sort(() => Math.random() - 0.5);
+        const map = new Map<string, string>();
+
+        alphabet.forEach((char, i) => map.set(char, shuffled[i] ?? char));
+
+        const encrypted = word.split('').map(char => map.get(char) ?? char).join('');
+
+        // Show a few mappings as hints
+        const hintCount = 3;
+        const hints: string[] = [];
+        for (let i = 0; i < hintCount; i++) {
+            const char = getRandomElement(word.split('')) ?? 'A';
+            hints.push(`${char}=${map.get(char)}`);
+        }
+
+        const options = [word];
+        while (options.length < 4) {
+            const wrongWord = getRandomElement(WORDS) ?? 'CODE';
+            if (!options.includes(wrongWord)) {
+                options.push(wrongWord);
+            }
+        }
+
+        return {
+            description: `Substitution: ${hints.join(', ')}...`,
+            encrypted,
+            options: options.sort(() => Math.random() - 0.5),
+            correctAnswer: word,
+            type: 'substitution' as any
+        };
     }
 }

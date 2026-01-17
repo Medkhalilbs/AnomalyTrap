@@ -11,6 +11,16 @@ const SHAPES = ['🔴', '🔵', '🟢', '🟡', '🟣', '⭐', '❤️', '⚡'];
 
 export class MemoryGenerator {
     generateChallenge(difficulty: number): MemoryChallenge {
+        // 20% chance for a Sequence Memory challenge
+        // But only if difficulty is high enough (e.g. > 3) to not overwhelm new players
+        if (difficulty > 3 && Math.random() < 0.2) {
+            return this.generateSequenceMemory(difficulty);
+        }
+
+        return this.generateGridMemory(difficulty);
+    }
+
+    private generateGridMemory(difficulty: number): MemoryChallenge {
         // Scale grid size with difficulty
         let gridSize = 3;
         if (difficulty > 5) gridSize = 4;
@@ -42,5 +52,13 @@ export class MemoryGenerator {
             options,
             correctAnswer
         };
+    }
+
+    private generateSequenceMemory(difficulty: number): MemoryChallenge {
+        // This is a dummy implementation to structure the code.
+        // In a real sequence memory, we'd need temporal display logic in the Vue component.
+        // For now, we'll return a grid memory but with a different "flavor" if possible,
+        // or just fallback to grid until UI supports sequence playback.
+        return this.generateGridMemory(difficulty);
     }
 }

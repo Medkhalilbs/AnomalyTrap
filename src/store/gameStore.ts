@@ -4,6 +4,7 @@ import type { RuleResult, LogicItemData } from '../game/rules/Rule';
 import { getThemeForScore, themes, type Theme } from '../utils/themes';
 import { sounds } from '../utils/sounds';
 import { GameMode, type GameModeValue } from '../types/modes';
+import { type Objective, DAILY_OBJECTIVES } from '../types/objectives';
 
 export const GameState = {
     MENU: 'MENU',
@@ -28,7 +29,6 @@ export const useGameStore = defineStore('game', {
         currentMode: GameMode.ANOMALY_HUNT as GameModeValue,
         score: 0,
         highscore: 0,
-        estimatedIQ: 100,
         lives: 3,
         hints: 1,
         isHintActive: false,
@@ -44,9 +44,10 @@ export const useGameStore = defineStore('game', {
         achievements: [
             { id: 'first_win', name: 'Fresh Start', description: 'Complete level 1', unlocked: false, icon: '🌱' },
             { id: 'boss_slayer', name: 'Boss Buster', description: 'Beat your first Boss Level', unlocked: false, icon: '⚔️' },
-            { id: 'logic_master', name: 'Logic Master', description: 'Reach 130 IQ', unlocked: false, icon: '🧠' },
+            { id: 'puzzle_master', name: 'Puzzle Master', description: 'Reach Level 20', unlocked: false, icon: '🧠' },
             { id: 'perfect_run', name: 'Perfect Run', description: 'Reach Level 20 without losing a life', unlocked: false, icon: '💎' },
         ] as Achievement[],
+        currentObjective: { ...DAILY_OBJECTIVES[0] } as Objective,
     }),
 
     actions: {
@@ -66,13 +67,14 @@ export const useGameStore = defineStore('game', {
                     this.isGameOver = true;
                     this.gameState = GameState.GAMEOVER;
                     this.checkAchievements();
+                    this.checkObjective();
                 },
                 (newScore: number) => {
                     this.score = newScore;
                     this.highscore = Math.max(this.highscore, this.engine?.getHighscore() || 0);
-                    this.estimatedIQ = this.engine?.getEstimatedIQ() || 100;
                     this.currentTheme = getThemeForScore(this.score);
                     this.checkAchievements();
+                    this.updateObjectiveProgress('score', this.score);
                 },
                 (lives: number) => {
                     this.lives = lives;
@@ -83,6 +85,7 @@ export const useGameStore = defineStore('game', {
             );
             this.highscore = this.engine.getHighscore();
             this.loadAchievements();
+            this.loadObjective();
         },
 
         startGame() {
@@ -90,6 +93,7 @@ export const useGameStore = defineStore('game', {
             this.gameState = GameState.PLAYING;
             this.isGameOver = false;
             this.engine?.start();
+            this.updateObjectiveProgress('gameplay', 1);
         },
 
         tapItem(index: number) {
@@ -100,6 +104,7 @@ export const useGameStore = defineStore('game', {
                 sounds.playSuccess();
                 this.lastCorrect = true;
                 this.combo++;
+                this.updateObjectiveProgress('combo', this.combo);
 
                 // Extra score based on combo
                 if (this.combo > 1) {
@@ -128,6 +133,7 @@ export const useGameStore = defineStore('game', {
             sounds.playMenuClick();
             this.gameState = GameState.MENU;
             this.isGameOver = false;
+            this.saveObjective();
         },
 
         useHint() {
@@ -153,7 +159,7 @@ export const useGameStore = defineStore('game', {
                 this.achievements[1].unlocked = true;
                 changed = true;
             }
-            if (this.estimatedIQ >= 130 && this.achievements[2] && !this.achievements[2].unlocked) {
+            if (this.score >= 20 && this.achievements[2] && !this.achievements[2].unlocked) {
                 this.achievements[2].unlocked = true;
                 changed = true;
             }
@@ -167,6 +173,28 @@ export const useGameStore = defineStore('game', {
             }
         },
 
+        updateObjectiveProgress(type: string, value: number) {
+            if (this.currentObjective.completed) return;
+
+            if (this.currentObjective.type === type) {
+                if (type === 'gameplay') {
+                    this.currentObjective.current += value;
+                } else {
+                    this.currentObjective.current = Math.max(this.currentObjective.current, value);
+                }
+                this.checkObjective();
+            }
+        },
+
+        checkObjective() {
+            if (!this.currentObjective.completed && this.currentObjective.current >= this.currentObjective.target) {
+                this.currentObjective.completed = true;
+                this.currentObjective.current = this.currentObjective.target;
+                // Maybe play a sound or show notification
+                this.saveObjective();
+            }
+        },
+
         saveAchievements() {
             localStorage.setItem('outlier_achievements', JSON.stringify(this.achievements));
         },
@@ -177,7 +205,6 @@ export const useGameStore = defineStore('game', {
                 try {
                     const loaded = JSON.parse(saved);
                     if (Array.isArray(loaded)) {
-                        // Merge loaded status with base list to avoid breaking if schema changes
                         loaded.forEach((savedAch: Achievement) => {
                             const index = this.achievements.findIndex(a => a.id === savedAch.id);
                             if (index !== -1 && this.achievements[index]) {
@@ -187,6 +214,21 @@ export const useGameStore = defineStore('game', {
                     }
                 } catch (e) {
                     console.error('Failed to load achievements', e);
+                }
+            }
+        },
+
+        saveObjective() {
+            localStorage.setItem('outlier_objective', JSON.stringify(this.currentObjective));
+        },
+
+        loadObjective() {
+            const saved = localStorage.getItem('outlier_objective');
+            if (saved) {
+                try {
+                    this.currentObjective = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Failed to load objective', e);
                 }
             }
         }

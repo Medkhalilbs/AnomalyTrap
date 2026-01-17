@@ -71,6 +71,13 @@ export class SequenceGenerator {
                 const sequence = primes.slice(startIdx, startIdx + 4);
                 const next = primes[startIdx + 4] ?? 41;
                 return { sequence, next };
+            },
+            // Binary Powers
+            () => {
+                const start = getRandomInt(1, 4);
+                const sequence = [Math.pow(2, start), Math.pow(2, start + 1), Math.pow(2, start + 2), Math.pow(2, start + 3)];
+                const next = Math.pow(2, start + 4);
+                return { sequence, next };
             }
         ];
 
