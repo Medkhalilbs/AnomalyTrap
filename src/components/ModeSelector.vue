@@ -32,9 +32,16 @@ const modes = MODE_CONFIGS;
 
 defineEmits(['close']);
 
-function selectMode(modeId: string) {
+  function selectMode(modeId: string) {
   // Enable implemented modes
-  const enabledModes = [GameMode.ANOMALY_HUNT, GameMode.SEQUENCE, GameMode.WORD_TRAP, GameMode.MEMORY];
+  const enabledModes = [
+    GameMode.ANOMALY_HUNT, 
+    GameMode.SEQUENCE, 
+    GameMode.WORD_TRAP, 
+    GameMode.MEMORY,
+    GameMode.RIDDLE,
+    GameMode.CIPHER
+  ];
   if (!enabledModes.includes(modeId as any)) {
     alert('This mode is coming soon! 🚀');
     return;

@@ -10,8 +10,12 @@ export interface MemoryChallenge {
 const SHAPES = ['🔴', '🔵', '🟢', '🟡', '🟣', '⭐', '❤️', '⚡'];
 
 export class MemoryGenerator {
-    generateChallenge(_difficulty: number): MemoryChallenge {
-        const gridSize = 3; // 3x3 grid
+    generateChallenge(difficulty: number): MemoryChallenge {
+        // Scale grid size with difficulty
+        let gridSize = 3;
+        if (difficulty > 5) gridSize = 4;
+        if (difficulty > 10) gridSize = 5;
+
         const grid: string[][] = [];
 
         // Fill grid with random shapes

@@ -10,6 +10,8 @@
       <SequenceMode v-else-if="store.currentMode === GameMode.SEQUENCE" />
       <WordTrapMode v-else-if="store.currentMode === GameMode.WORD_TRAP" />
       <MemoryMode v-else-if="store.currentMode === GameMode.MEMORY" />
+      <RiddleMode v-else-if="store.currentMode === GameMode.RIDDLE" />
+      <CipherMode v-else-if="store.currentMode === GameMode.CIPHER" />
       <!-- Other modes will be added here -->
     </template>
 
@@ -32,6 +34,8 @@ import GameOver from './components/GameOver.vue';
 import SequenceMode from './modes/sequence/SequenceMode.vue';
 import WordTrapMode from './modes/word/WordTrapMode.vue';
 import MemoryMode from './modes/memory/MemoryMode.vue';
+import RiddleMode from './modes/riddle/RiddleMode.vue';
+import CipherMode from './modes/cipher/CipherMode.vue';
 import { useGameStore, GameState } from './store/gameStore';
 import { GameMode } from './types/modes';
 

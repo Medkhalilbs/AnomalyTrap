@@ -8,17 +8,23 @@ export interface WordChallenge {
 }
 
 const WORD_CATEGORIES = {
-    fruits: ['Apple', 'Banana', 'Orange', 'Grape', 'Mango', 'Peach', 'Lemon'],
-    animals: ['Dog', 'Cat', 'Lion', 'Tiger', 'Bear', 'Wolf', 'Fox'],
-    colors: ['Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange', 'Pink'],
-    countries: ['France', 'Spain', 'Italy', 'Japan', 'Brazil', 'Canada', 'Mexico'],
-    sports: ['Soccer', 'Tennis', 'Basketball', 'Baseball', 'Hockey', 'Golf', 'Swimming'],
-    vehicles: ['Car', 'Bus', 'Train', 'Plane', 'Boat', 'Bike', 'Truck']
+    fruits: ['Apple', 'Banana', 'Orange', 'Grape', 'Mango', 'Peach', 'Lemon', 'Cherry', 'Kiwi', 'Melon'],
+    animals: ['Dog', 'Cat', 'Lion', 'Tiger', 'Bear', 'Wolf', 'Fox', 'Elephant', 'Giraffe', 'Zebra', 'Monkey', 'Rabbit'],
+    colors: ['Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange', 'Pink', 'Brown', 'Black', 'White', 'Cyan', 'Magenta'],
+    countries: ['France', 'Spain', 'Italy', 'Japan', 'Brazil', 'Canada', 'Mexico', 'Germany', 'China', 'India', 'Australia', 'Egypt'],
+    sports: ['Soccer', 'Tennis', 'Basketball', 'Baseball', 'Hockey', 'Golf', 'Swimming', 'Volleyball', 'Rugby', 'Cricket'],
+    vehicles: ['Car', 'Bus', 'Train', 'Plane', 'Boat', 'Bike', 'Truck', 'Submarine', 'Helicopter', 'Scooter'],
+    planets: ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Earth'],
+    elements: ['Hydrogen', 'Helium', 'Oxygen', 'Carbon', 'Gold', 'Silver', 'Iron', 'Copper', 'Neon', 'Zinc'],
+    capitals: ['Paris', 'London', 'Tokyo', 'Rome', 'Berlin', 'Madrid', 'Ottawa', 'Cairo', 'Canberra', 'Brasilia']
 };
 
 const ANAGRAM_WORDS = [
     'LISTEN', 'SILENT', 'EARTH', 'HEART', 'TRIANGLE', 'INTEGRAL',
-    'STUDY', 'DUSTY', 'NIGHT', 'THING', 'STOP', 'POTS'
+    'STUDY', 'DUSTY', 'NIGHT', 'THING', 'STOP', 'POTS',
+    'GARDEN', 'DANGER', 'PLAYER', 'REPLAY', 'SMILE', 'SLIME',
+    'BREAD', 'BEARD', 'CLOUD', 'COULD', 'LEMON', 'MELON',
+    'FRIED', 'FIRED', 'HORSE', 'SHORE', 'TRACE', 'REACT'
 ];
 
 export class WordTrapGenerator {
