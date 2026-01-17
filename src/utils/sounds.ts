@@ -35,6 +35,20 @@ class SoundManager {
     private playOscillator(freq: number, duration: number, type: OscillatorType) {
         if (!this.ctx) return;
 
+        // Circular dependency workaround: get store instance here or check local storage directly for perf
+        // To keep it clean, let's check localStorage since store might not be initialized when sound utils is created
+        // Or better: access the store instance directly if initialized.
+        // Actually, Pinia store can be used outside components if pinia instance is active.
+
+        // Quick check from localStorage for immediate responsiveness without import cycles
+        const settings = localStorage.getItem('game_settings');
+        if (settings) {
+            try {
+                const s = JSON.parse(settings);
+                if (s.sound === false) return;
+            } catch (e) { }
+        }
+
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
 

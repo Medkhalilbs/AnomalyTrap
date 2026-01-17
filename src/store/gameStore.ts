@@ -35,6 +35,9 @@ export const useGameStore = defineStore('game', {
         combo: 0,
         isShaking: false,
         activeGoals: [] as Goal[],
+        // Settings
+        language: 'en' as 'en' | 'fr' | 'ar',
+        soundEnabled: true,
     }),
 
     getters: {
@@ -77,7 +80,9 @@ export const useGameStore = defineStore('game', {
                 }
             );
             this.highscore = this.engine.getHighscore();
+            this.highscore = this.engine.getHighscore();
             this.loadGoals();
+            this.loadSettings();
         },
 
         startGame() {
@@ -212,6 +217,39 @@ export const useGameStore = defineStore('game', {
 
         saveGoals() {
             localStorage.setItem('outlier_goals', JSON.stringify(this.activeGoals));
+        },
+
+        toggleSound() {
+            this.soundEnabled = !this.soundEnabled;
+            // Optionally save to local storage immediately
+            this.saveSettings();
+        },
+
+        setLanguage(lang: 'en' | 'fr' | 'ar') {
+            this.language = lang;
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            this.saveSettings();
+        },
+
+        saveSettings() {
+            localStorage.setItem('game_settings', JSON.stringify({
+                sound: this.soundEnabled,
+                lang: this.language
+            }));
+        },
+
+        loadSettings() {
+            const saved = localStorage.getItem('game_settings');
+            if (saved) {
+                try {
+                    const settings = JSON.parse(saved);
+                    if (settings.lang) this.setLanguage(settings.lang);
+                    if (settings.sound !== undefined) this.soundEnabled = settings.sound;
+                } catch (e) {
+                    console.error("Failed to load settings", e);
+                }
+            }
         },
 
         loadGoals() {

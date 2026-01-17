@@ -2,7 +2,7 @@
   <div class="detective-mode">
     <div class="mode-header">
       <button class="back-btn" @click="goBack" aria-label="Home">🏠</button>
-      <div class="score-display">Score: {{ store.score }}</div>
+      <div class="score-display">{{ t('score') }}: {{ store.score }}</div>
     </div>
 
     <div class="story-card">
@@ -47,9 +47,14 @@
 import { ref, onMounted } from 'vue';
 import { useGameStore, GameState } from '../../store/gameStore';
 import { DetectiveGenerator, type DetectiveScenario } from './detectiveData';
+import { translations } from '../../utils/i18n';
 
 const store = useGameStore();
 const generator = new DetectiveGenerator();
+
+function t(key: keyof typeof translations['en']) {
+    return translations[store.language][key];
+}
 
 function goBack() {
   store.gameState = GameState.MENU;

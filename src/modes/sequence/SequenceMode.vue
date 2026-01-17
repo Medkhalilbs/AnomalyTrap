@@ -2,7 +2,7 @@
   <div class="sequence-mode">
     <div class="mode-header">
       <button class="back-btn" @click="goBack" aria-label="Home">🏠</button>
-      <div class="score-display">Score: {{ score }}</div>
+      <div class="score-display">{{ t('score') }}: {{ score }}</div>
     </div>
 
     <div class="challenge-container">
@@ -44,9 +44,14 @@
 import { ref, onMounted } from 'vue';
 import { useGameStore, GameState } from '../../store/gameStore';
 import { SequenceGenerator, type SequenceChallenge } from './sequenceGenerator';
+import { translations } from '../../utils/i18n';
 
 const store = useGameStore();
 const generator = new SequenceGenerator();
+
+function t(key: keyof typeof translations['en']) {
+    return translations[store.language][key];
+}
 
 const score = ref(0);
 const currentChallenge = ref<SequenceChallenge>(generator.generateChallenge(1));

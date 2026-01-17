@@ -2,7 +2,7 @@
   <div class="memory-mode">
     <div class="mode-header">
       <button class="back-btn" @click="goBack" aria-label="Home">🏠</button>
-      <div class="score-display">Score: {{ score }}</div>
+      <div class="score-display">{{ t('score') }}: {{ score }}</div>
     </div>
 
     <!-- MAIN CONTAINER -->

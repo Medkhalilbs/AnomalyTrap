@@ -15,9 +15,9 @@
           @click="selectMode(mode.id)"
         >
           <div class="mode-icon">{{ mode.icon }}</div>
-          <h3 class="mode-name">{{ mode.name }}</h3>
-          <p class="mode-description">{{ mode.description }}</p>
-          <div class="mode-badge">PLAY</div>
+          <h3 class="mode-name">{{ getModeInfo(mode.id).name }}</h3>
+          <p class="mode-description">{{ getModeInfo(mode.id).desc }}</p>
+          <div class="mode-badge">{{ t('play') }}</div>
         </div>
       </div>
     </div>
@@ -28,8 +28,19 @@
 import { computed } from 'vue';
 import { MODE_CONFIGS, GameMode, type GameModeValue } from '../types/modes';
 import { useGameStore, GameState } from '../store/gameStore';
+import { translations } from '../utils/i18n';
 
 const store = useGameStore();
+
+function t(key: keyof typeof translations['en']) {
+    return translations[store.language][key];
+}
+
+function getModeInfo(id: string) {
+    const modes = t('modes') as any;
+    return modes[id] || { name: 'Unknown', desc: '...' };
+}
+
 const filteredModes = computed(() => {
     return MODE_CONFIGS;
 });

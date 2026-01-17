@@ -2,12 +2,12 @@
   <div class="main-menu">
     <div class="title-container">
       <h1 class="game-title">ANOMALY<span>TRAP</span></h1>
-      <p class="tagline">Test your peak logic capacity</p>
+      <p class="tagline">{{ t('estimatedIQ') }} TEST</p>
     </div>
 
     <div class="stats-card">
       <div class="stat-item">
-        <span class="stat-label">HIGHSCORE</span>
+        <span class="stat-label">{{ t('score') }}</span>
         <span class="stat-value">{{ store.highscore }}</span>
       </div>
     </div>
@@ -38,15 +38,16 @@
 
     <div class="menu-actions">
       <button class="play-button" @click="showModeSelector = true">
-        SELECT MODE
+        {{ t('play') }}
       </button>
-      <button class="tutorial-button" @click="showTutorial = true">
-        HOW TO PLAY
+      <button class="settings-button" @click="showSettings = true">
+        {{ t('settings') }} ⚙️
       </button>
     </div>
 
     <ModeSelector v-if="showModeSelector" @close="showModeSelector = false" />
     <TutorialOverlay v-if="showTutorial" @close="showTutorial = false" />
+    <SettingsMenu v-if="showSettings" @close="showSettings = false" />
   </div>
 </template>
 
@@ -55,10 +56,17 @@ import { ref } from 'vue';
 import { useGameStore } from '../store/gameStore';
 import TutorialOverlay from './TutorialOverlay.vue';
 import ModeSelector from './ModeSelector.vue';
+import SettingsMenu from './SettingsMenu.vue';
+import { translations } from '../utils/i18n';
 
 const store = useGameStore();
 const showTutorial = ref(false);
 const showModeSelector = ref(false);
+const showSettings = ref(false);
+
+function t(key: keyof typeof translations['en']) {
+    return translations[store.language][key];
+}
 </script>
 
 <style scoped>
@@ -299,6 +307,26 @@ const showModeSelector = ref(false);
   background: rgba(255, 255, 255, 0.1);
   color: white;
   border-color: rgba(255, 255, 255, 0.2);
+}
+
+.settings-button {
+  background: white;
+  color: var(--secondary-color);
+  border: none;
+  border-radius: 16px;
+  padding: 15px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  text-transform: uppercase;
+}
+
+.settings-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .goals-section {
