@@ -389,4 +389,36 @@ const showModeSelector = ref(false);
     50% { transform: scale(1.3); }
 }
 
+@media (max-width: 600px) {
+  .game-title {
+    font-size: 3rem;
+  }
+  
+  .tagline {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+  }
+  
+  .stats-card {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  .goals-section {
+    margin-bottom: 20px;
+  }
+  
+  .play-button {
+    padding: 18px;
+    font-size: 1.2rem;
+  }
+
+  .menu-actions {
+    gap: 15px;
+  }
+}
 </style>

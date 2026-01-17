@@ -206,7 +206,7 @@ onMounted(() => {
 
 @media (max-width: 600px) {
   .options-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Stack vertically on phones */
   }
   
   .challenge-question {
@@ -215,6 +215,18 @@ onMounted(() => {
   
   .option-btn {
     font-size: 1rem;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 360px) {
+  .challenge-question {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+  
+  .option-btn {
+    padding: 12px;
   }
 }
 </style>

@@ -36,6 +36,13 @@ export const useGameStore = defineStore('game', {
         activeGoals: [] as Goal[],
     }),
 
+    getters: {
+        estimatedIQ: (state) => 80 + Math.min(state.score * 2 + ((parseInt(state.levelText.replace(/\D/g, '')) || 1) - 1) * 5, 80),
+        // We already have levelText in state, but let's ensure consistency if we want a getter. 
+        // Actually, the component uses store.levelText which is state. 
+        // But the error was about estimatedIQ.
+    },
+
     actions: {
         initGame() {
             this.engine = new GameEngine(

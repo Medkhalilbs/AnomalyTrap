@@ -328,10 +328,11 @@ function handleTap(index: number) {
   filter: drop-shadow(0 0 15px var(--accent-color));
 }
 
-@media (max-width: 350px) {
+@media (max-width: 400px) {
   .items-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 12px;
+    padding: 10px;
   }
 }
 

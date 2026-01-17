@@ -36,7 +36,7 @@
             @click="onCellClick(rowIndex, colIndex)"
           >
             <!-- Show content only for Grid Memory during memorize phase or if it's the sequence flash -->
-            <span v-if="shouldShowContent(rowIndex, colIndex)">{{ cell }}</span>
+            <span v-if="shouldShowContent()">{{ cell }}</span>
             <span v-else-if="isQuestionCell(rowIndex, colIndex)">?</span>
           </div>
         </div>
@@ -137,7 +137,7 @@ function isQuestionCell(r: number, c: number) {
          currentChallenge.value.questionPosition?.col === c;
 }
 
-function shouldShowContent(r: number, c: number) {
+function shouldShowContent() {
   if (currentChallenge.value.type === 'sequence') return false; // Sequence cells are usually empty until lit
   if (phase.value === 'memorize') return true;
   return false;
@@ -405,6 +405,23 @@ onMounted(() => {
   
   .options-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 380px) {
+  .grid-cell {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+    border-width: 3px;
+  }
+  
+  .grid-row {
+     gap: 6px;
+  }
+  
+  .memory-grid {
+    gap: 6px;
   }
 }
 </style>

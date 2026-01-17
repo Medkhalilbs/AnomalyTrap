@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { MODE_CONFIGS, GameMode, type GameModeValue } from '../types/modes';
 import { useGameStore, GameState } from '../store/gameStore';
 
@@ -190,6 +190,7 @@ function selectMode(modeId: string) {
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -206,6 +207,7 @@ function selectMode(modeId: string) {
     font-weight: 900;
 }
 
+/* Landscape / Desktop tweaks */
 /* Landscape / Desktop tweaks */
 @media (min-width: 768px) {
   .modes-grid {
@@ -224,6 +226,44 @@ function selectMode(modeId: string) {
 
   .mode-name {
     font-size: 1.4rem;
+  }
+}
+
+/* Small mobile tweak */
+@media (max-width: 400px) {
+  .modes-grid {
+    grid-template-columns: 1fr; /* Single column on very small screens */
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .mode-card {
+    flex-direction: row; /* Horizontal layout for single column */
+    min-height: 100px;
+    justify-content: flex-start;
+    padding: 15px;
+    gap: 20px;
+  }
+
+  .mode-icon {
+    margin-bottom: 0;
+    font-size: 2.5rem;
+  }
+
+  .mode-info-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mode-name {
+    text-align: left;
+    font-size: 1.2rem;
+  }
+
+  .mode-description {
+    text-align: left;
+    -webkit-line-clamp: 2;
   }
 }
 </style>
