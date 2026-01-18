@@ -9,7 +9,7 @@ export const getRandomInt = (min: number, max: number): number => {
  * Returns a random element from an array.
  */
 export const getRandomElement = <T>(array: T[]): T => {
-    return array[getRandomInt(0, array.length - 1)];
+    return array[getRandomInt(0, array.length - 1)] as T;
 };
 
 /**

@@ -1,47 +1,84 @@
 import type { GameRule, RuleResult, LogicItemData } from './Rule';
-import { getRandomInt } from '../../utils/random';
+import { ColorRule } from './ColorRule';
+import { ShapeRule } from './ShapeRule';
+import { PatternRule } from './PatternRule';
+import { OrientationRule } from './OrientationRule';
+import { getRandomInt, getRandomElement } from '../../utils/random';
 
 export class CompositeRule implements GameRule {
     name = 'Composite Logic';
-    description = 'Logic combining color and number or shape.';
+    description = 'Combination of multiple visual anomalies.';
 
-    generate(_difficulty: number): RuleResult {
-        // For simplicity, we'll combine Color + Number
-        // Rule: All Even numbers are Blue, All Odd numbers are Red.
-        // Outlier: An Even number that is Red, or an Odd number that is Blue.
+    private rules: GameRule[] = [
+        new ColorRule(),
+        new ShapeRule(),
+        new PatternRule(),
+        new OrientationRule()
+    ];
 
-        const itemCount = getRandomInt(5, 7);
+    generate(difficulty: number, count?: number): RuleResult {
+        const itemCount = count || getRandomInt(5, 7);
+
+        // Pick two DIFFERENT rules to combine
+        const rule1 = getRandomElement(this.rules) ?? this.rules[0];
+        let rule2 = getRandomElement(this.rules) ?? this.rules[1];
+
+        // Ensure rule2 is different from rule1
+        while (rule2 === rule1 && this.rules.length > 1) {
+            rule2 = getRandomElement(this.rules) ?? this.rules[1];
+        }
+
+        const res1 = rule1.generate(difficulty, itemCount);
+        const res2 = rule2.generate(difficulty, itemCount);
+
+        // Use res1's outlier as the final outlier
+        const finalOutlierIndex = res1.outlierIndex;
         const items: LogicItemData[] = [];
-        const outlierIndex = getRandomInt(0, itemCount - 1);
-
-        const evenColor = '#3498db'; // Blue
-        const oddColor = '#e74c3c'; // Red
 
         for (let i = 0; i < itemCount; i++) {
-            let value = getRandomInt(1, 20);
-            let color = value % 2 === 0 ? evenColor : oddColor;
+            const baseItem = res1.items[i];
 
-            if (i === outlierIndex) {
-                // Break the link between parity and color
-                color = value % 2 === 0 ? oddColor : evenColor;
+            if (!baseItem) {
+                items.push({
+                    id: i.toString(),
+                    shape: 'circle',
+                    color: '#3498db',
+                    rotation: 0,
+                    scale: 1,
+                    opacity: 1,
+                    strokeWidth: 4,
+                    hasInnerDot: false,
+                    isHollow: false,
+                    animationType: 'none',
+                    animationSpeed: 0
+                });
+                continue;
             }
 
+            // For decoys: take properties from res2's decoys
+            // For outlier: keep res1's outlier properties (don't override!)
+            const secondaryIndex = i === finalOutlierIndex ? res2.outlierIndex : (res2.outlierIndex + 1) % itemCount;
+            const secondaryItem = res2.items[secondaryIndex];
+
+            if (!secondaryItem) {
+                items.push(baseItem);
+                continue;
+            }
+
+            // Merge: base properties from res1, add secondary visual details from res2
             items.push({
-                id: i.toString(),
-                value,
-                color,
-                shape: 'circle',
-                rotation: 0,
-                sides: 0,
-                opacity: 1,
-                scale: 1,
+                ...baseItem,
+                // Add secondary visual complexity without breaking the primary rule
+                strokeWidth: secondaryItem.strokeWidth,
+                hasInnerDot: secondaryItem.hasInnerDot,
+                isHollow: secondaryItem.isHollow
             });
         }
 
         return {
             items,
-            outlierIndex,
-            ruleDescription: 'Rule: Color matches Parity',
+            outlierIndex: finalOutlierIndex,
+            ruleDescription: 'Multi-Logic Anomaly',
         };
     }
 }

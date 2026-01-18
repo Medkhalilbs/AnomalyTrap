@@ -1,36 +1,69 @@
-import type { GameRule, RuleResult } from '../rules/Rule';
-import { NumberRule } from '../rules/NumberRule';
+import type { GameRule } from '../rules/Rule';
 import { ShapeRule } from '../rules/ShapeRule';
 import { ColorRule } from '../rules/ColorRule';
+import { PatternRule } from '../rules/PatternRule';
+import { OrientationRule } from '../rules/OrientationRule';
+import { MotionRule } from '../rules/MotionRule';
+import { GlitchRule } from '../rules/GlitchRule';
+import { RecursiveRule } from '../rules/RecursiveRule';
+import { StroopRule } from '../rules/StroopRule';
+import { PathRule } from '../rules/PathRule';
 import { CompositeRule } from '../rules/CompositeRule';
-import { getRandomElement } from '../../utils/random';
+import { getRandomElement, getRandomInt } from '../../utils/random';
 
 export class LevelGenerator {
-    private rules: GameRule[] = [];
+    private rules: GameRule[];
 
     constructor() {
         this.rules = [
-            new NumberRule(),
             new ShapeRule(),
             new ColorRule(),
-            new CompositeRule(),
+            new PatternRule(),
+            new OrientationRule(),
+            new MotionRule(),
+            new GlitchRule(),
+            new RecursiveRule(),
+            new StroopRule(),
+            new PathRule(),
+            new CompositeRule()
         ];
     }
 
-    generate(level: number): RuleResult {
-        // Increase difficulty based on level
-        const difficulty = Math.floor(level / 5);
+    generate(difficulty: number, score: number): any {
+        const level = score + 1;
 
-        // Choose available rules based on difficulty
-        // (Early levels might only use Number or Color)
-        let availableRules = this.rules;
-        if (level < 5) {
-            availableRules = this.rules.filter(r => r instanceof NumberRule || r instanceof ColorRule);
-        } else if (level < 10) {
-            availableRules = this.rules.filter(r => !(r instanceof CompositeRule));
+        // Determine item count
+        let itemCount = getRandomInt(5, 7);
+        if (level > 5) {
+            itemCount = getRandomInt(6, 8);
         }
 
-        const rule = getRandomElement(availableRules);
-        return rule.generate(difficulty);
+        // Rule selection
+        let selectedRule: GameRule;
+
+        if (level < 2) {
+            // Level 1: Basics only
+            selectedRule = (getRandomElement(this.rules.slice(0, 3)) || this.rules[0]) as GameRule;
+        } else if (level < 5) {
+            // Level 2-4: Add Motion & Glitch
+            selectedRule = (getRandomElement(this.rules.slice(0, 6)) || this.rules[0]) as GameRule;
+        } else {
+            // Level 5+: UNLOCK EVERYTHING (Mind Traps included)
+            selectedRule = (getRandomElement(this.rules) || this.rules[0]) as GameRule;
+        }
+
+        const result = selectedRule.generate(difficulty, itemCount);
+
+        // --- LIAR MODE (Brain Fuck) ---
+        // Activate earlier: Level 5+
+        if (level > 5 && level % 3 === 0) {
+            const isLiar = Math.random() > 0.6;
+            if (isLiar) {
+                const decoyRule = getRandomElement(this.rules.filter(r => r !== selectedRule));
+                result.ruleDescription = `⚠️ TRUST NO ONE: ${decoyRule?.name}`;
+            }
+        }
+
+        return result;
     }
 }

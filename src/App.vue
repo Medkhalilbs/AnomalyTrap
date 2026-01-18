@@ -1,26 +1,89 @@
 <template>
   <main class="app-main">
-    <GameBoard />
-    <GameOver 
-      v-if="store.isGameOver" 
-      :score="store.score" 
-      :highscore="store.highscore"
-      @restart="store.restart()"
-    />
+    <Transition name="fade">
+      <MainMenu v-if="store.gameState === GameState.MENU" />
+    </Transition>
+
+    <!-- Route to different game modes based on currentMode -->
+    <template v-if="store.gameState === GameState.PLAYING">
+      <GameBoard v-if="store.currentMode === GameMode.ANOMALY_HUNT" />
+      <SequenceMode v-else-if="store.currentMode === GameMode.SEQUENCE" />
+      <WordTrapMode v-else-if="store.currentMode === GameMode.WORD_TRAP" />
+      <MemoryMode v-else-if="store.currentMode === GameMode.MEMORY" />
+      <RiddleMode v-else-if="store.currentMode === GameMode.RIDDLE" />
+      <CipherMode v-else-if="store.currentMode === GameMode.CIPHER" />
+      <DetectiveMode v-else-if="store.currentMode === GameMode.DETECTIVE" />
+      <ContradictionMode v-else-if="store.currentMode === GameMode.CONTRADICTION" />
+      <!-- Other modes will be added here -->
+    </template>
+
+    <Transition name="slide-up">
+      <GameOver 
+        v-if="store.gameState === GameState.GAMEOVER" 
+        :score="store.score" 
+        :highscore="store.highscore"
+        @restart="store.restart()"
+      />
+    </Transition>
   </main>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { useGameStore } from './store/gameStore';
+import { onMounted, watch } from 'vue';
+import MainMenu from './components/MainMenu.vue';
 import GameBoard from './components/GameBoard.vue';
 import GameOver from './components/GameOver.vue';
+import SequenceMode from './modes/sequence/SequenceMode.vue';
+import WordTrapMode from './modes/word/WordTrapMode.vue';
+import MemoryMode from './modes/memory/MemoryMode.vue';
+import RiddleMode from './modes/riddle/RiddleMode.vue';
+import CipherMode from './modes/cipher/CipherMode.vue';
+import DetectiveMode from './modes/detective/DetectiveMode.vue';
+import ContradictionMode from './modes/contradiction/ContradictionMode.vue';
+import { useGameStore, GameState } from './store/gameStore';
+import { GameMode } from './types/modes';
+import { sounds } from './utils/sounds';
+import { adService } from './utils/adService';
+import { haptics } from './utils/haptics';
 
 const store = useGameStore();
 
 onMounted(() => {
+  adService.initialize();
+  haptics.initialize();
   store.initGame();
+  updateTheme();
 });
+
+watch(() => store.gameState, (newState) => {
+  if (newState === GameState.PLAYING) {
+    handleMusicChange();
+  } else {
+    sounds.stopMusic();
+  }
+});
+
+watch(() => store.currentMode, () => {
+  if (store.gameState === GameState.PLAYING) {
+    handleMusicChange();
+  }
+});
+
+function handleMusicChange() {
+  sounds.playMusic();
+}
+
+watch(() => store.currentTheme, () => {
+  updateTheme();
+});
+
+function updateTheme() {
+  const theme = store.currentTheme;
+  document.documentElement.style.setProperty('--primary-color', theme.primary);
+  document.documentElement.style.setProperty('--bg-color', theme.background);
+  document.documentElement.style.setProperty('--accent-color', theme.accent);
+  document.documentElement.style.setProperty('--secondary-color', theme.secondary);
+}
 </script>
 
 <style>
@@ -29,5 +92,22 @@ onMounted(() => {
   height: 100%;
   position: relative;
   overflow: hidden;
+  background-color: var(--bg-color);
+}
+
+/* Transitions */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.slide-up-enter-active, .slide-up-leave-active {
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+}
+.slide-up-enter-from, .slide-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
 }
 </style>
