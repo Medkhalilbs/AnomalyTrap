@@ -9,7 +9,7 @@
           <span class="value">{{ score }}</span>
         </div>
         <div class="stat-item">
-          <span class="label">EST. IQ</span>
+          <span class="label">EST</span>
           <span class="value">{{ Math.round(100 + (score * 2.5)) }}</span>
         </div>
       </div>
