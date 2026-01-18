@@ -41,8 +41,18 @@ const ANAGRAM_WORDS = {
 };
 
 export class WordTrapGenerator {
-    generateChallenge(difficulty: number, lang: 'en' | 'fr' | 'ar' = 'en'): WordChallenge {
-        const type = getRandomElement(['anagram', 'oddOneOut', 'category'] as const) ?? 'anagram';
+    private typePool: number[] = [];
+
+    generateChallenge(_difficulty: number, lang: 'en' | 'fr' | 'ar' = 'en'): WordChallenge {
+        const types = ['anagram', 'oddOneOut', 'category'] as const;
+
+        if (this.typePool.length === 0) {
+            this.typePool = types.map((_, i) => i);
+            shuffleArray(this.typePool);
+        }
+
+        const typeIndex = this.typePool.pop()!;
+        const type = types[typeIndex];
 
         switch (type) {
             case 'anagram':

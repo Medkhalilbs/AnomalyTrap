@@ -2,7 +2,7 @@
   <div class="memory-mode">
     <div class="mode-header">
       <button class="back-btn" @click="goBack" aria-label="Home">🏠</button>
-      <div class="score-display">{{ t('score') }}: {{ score }}</div>
+      <div class="score-display">{{ t('score') }}: {{ store.score }}</div>
     </div>
 
     <!-- MAIN CONTAINER -->
@@ -67,6 +67,8 @@
 import { ref, onMounted } from 'vue';
 import { useGameStore, GameState } from '../../store/gameStore';
 import { translations } from '../../utils/i18n';
+import { sounds } from '../../utils/sounds';
+import { MemoryGenerator, type MemoryChallenge } from './memoryGenerator';
 
 const store = useGameStore();
 const generator = new MemoryGenerator();
@@ -76,7 +78,6 @@ function t(key: keyof typeof translations['en']) {
 }
 
 // State
-const score = ref(0);
 const difficulty = ref(1);
 const currentChallenge = ref<MemoryChallenge>(generator.generateChallenge(1));
 const phase = ref<'memorize' | 'question' | 'watch' | 'repeat' | 'result'>('memorize');
@@ -167,7 +168,7 @@ async function startSequencePhase() {
 async function flashCell(r: number, c: number) {
   // Hacky way to identify cell by index/coords to highlight it
   activeSequenceStep.value = r * 100 + c; // Simple encoding
-  // Play sound here if possible
+  sounds.playTap();
   if (window.navigator.vibrate) window.navigator.vibrate(50);
   
   await new Promise(r => setTimeout(r, 500));
@@ -179,6 +180,7 @@ function onCellClick(r: number, c: number) {
   
   // Flash feedback
   activeSequenceStep.value = r * 100 + c;
+  sounds.playTap();
   if (window.navigator.vibrate) window.navigator.vibrate(10);
   setTimeout(() => activeSequenceStep.value = null, 200);
 
@@ -208,11 +210,12 @@ function finishRound(win: boolean) {
   isCorrect.value = win;
   
   if (win) {
-    score.value++;
+    sounds.playSuccess();
     store.addScore(10);
     difficulty.value += 0.5; // Gradual difficulty increase
     if (difficulty.value % 5 === 0) store.lives++; // Bonus life
   } else {
+    sounds.playError();
     store.lives--;
     if (window.navigator.vibrate) window.navigator.vibrate(200);
     if (store.lives <= 0) {
@@ -244,6 +247,7 @@ function getCellClasses(r: number, c: number) {
 }
 
 function goBack() {
+  sounds.playMenuClick();
   store.gameState = GameState.MENU;
 }
 

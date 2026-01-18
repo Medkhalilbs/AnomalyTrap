@@ -1,4 +1,4 @@
-import { getRandomElement, shuffleArray } from '../../utils/random';
+import { shuffleArray } from '../../utils/random';
 
 export interface RiddleChallenge {
     question: string;
@@ -116,9 +116,19 @@ const RIDDLES_DATA = {
 };
 
 export class RiddleGenerator {
+    private pool: Record<string, number[]> = { en: [], fr: [], ar: [] };
+
     generateChallenge(_difficulty: number, lang: 'en' | 'fr' | 'ar' = 'en'): RiddleChallenge {
         const riddles = RIDDLES_DATA[lang] || RIDDLES_DATA['en'];
-        const riddle = getRandomElement(riddles) ?? riddles[0];
+
+        if (!this.pool[lang] || this.pool[lang].length === 0) {
+            this.pool[lang] = riddles.map((_, i) => i);
+            shuffleArray(this.pool[lang]);
+        }
+
+        const index = this.pool[lang].pop()!;
+        const riddle = riddles[index] || riddles[0];
+        if (!riddle) throw new Error("No riddle found");
 
         const options = shuffleArray([riddle.a, ...riddle.wrong]);
 

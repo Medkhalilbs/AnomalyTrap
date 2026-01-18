@@ -1,4 +1,4 @@
-import { getRandomElement, getRandomInt } from '../../utils/random';
+import { shuffleArray, getRandomInt, getRandomElement } from '../../utils/random';
 
 export interface CipherChallenge {
     description: string;
@@ -32,14 +32,22 @@ const WORDS_DATA = {
 };
 
 export class CipherGenerator {
+    private pool: Record<string, number[]> = { en: [], fr: [] };
+
     generateChallenge(_difficulty: number, lang: 'en' | 'fr' | 'ar' = 'en'): CipherChallenge {
-        const type = getRandomElement(['caesar', 'reverse', 'atbash', 'substitution', 'railfence'] as const) ?? 'caesar';
-        // For Cipher, we stick to English words for the puzzle content to ensure mechanics work, 
-        // but we can use French words if selected. Arabic might be too hard to render reversed/shifted properly without specialized font handling.
-        // Let's use English words for AR, French for FR.
+        const types = ['caesar', 'reverse', 'atbash', 'substitution', 'railfence'] as string[];
+        const type = getRandomElement(types) as 'caesar' | 'reverse' | 'atbash' | 'substitution' | 'railfence' || 'caesar';
+
         const effectiveLang = lang === 'ar' ? 'en' : lang;
-        const wordList = WORDS_DATA[effectiveLang] || WORDS_DATA['en'];
-        const word = getRandomElement(wordList) ?? 'SECRET';
+        const wordList = WORDS_DATA[effectiveLang as 'en' | 'fr'] || WORDS_DATA['en'];
+
+        if (!this.pool[effectiveLang] || this.pool[effectiveLang].length === 0) {
+            this.pool[effectiveLang] = wordList.map((_, i) => i);
+            shuffleArray(this.pool[effectiveLang]);
+        }
+
+        const index = this.pool[effectiveLang].pop()!;
+        const word = wordList[index] || 'SECRET';
 
         switch (type) {
             case 'caesar':

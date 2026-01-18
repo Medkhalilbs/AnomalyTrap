@@ -8,12 +8,9 @@
         <span>🏠</span>
       </button>
 
-      <div class="iq-display">
-        <span class="iq-label">{{ t('estimatedIQ') }}</span>
-        <span class="iq-value">{{ Math.round(store.estimatedIQ) }}</span>
-        <div class="progress-track">
-          <div class="progress-bar" :style="{ width: `${((store.score % 5) / 5) * 100}%` }"></div>
-        </div>
+      <div class="mode-info-display">
+        <span class="mode-name-label">{{ t('score') }}</span>
+        <span class="score-value-large">{{ store.score }}</span>
       </div>
       
       <div class="header-controls">

@@ -2,7 +2,6 @@
   <div class="main-menu">
     <div class="title-container">
       <h1 class="game-title">ANOMALY<span>TRAP</span></h1>
-      <p class="tagline">{{ t('estimatedIQ') }} TEST</p>
     </div>
 
     <div class="stats-card">

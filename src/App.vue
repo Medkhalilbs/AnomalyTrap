@@ -42,6 +42,7 @@ import DetectiveMode from './modes/detective/DetectiveMode.vue';
 import ContradictionMode from './modes/contradiction/ContradictionMode.vue';
 import { useGameStore, GameState } from './store/gameStore';
 import { GameMode } from './types/modes';
+import { sounds } from './utils/sounds';
 
 const store = useGameStore();
 
@@ -49,6 +50,33 @@ onMounted(() => {
   store.initGame();
   updateTheme();
 });
+
+watch(() => store.gameState, (newState) => {
+  if (newState === GameState.PLAYING) {
+    handleMusicChange();
+  } else {
+    sounds.stopMusic();
+  }
+});
+
+watch(() => store.currentMode, () => {
+  if (store.gameState === GameState.PLAYING) {
+    handleMusicChange();
+  }
+});
+
+function handleMusicChange() {
+  const mysteryModes = [GameMode.DETECTIVE, GameMode.CONTRADICTION, GameMode.RIDDLE];
+  const actionModes = [GameMode.ANOMALY_HUNT, GameMode.CIPHER, GameMode.SEQUENCE];
+  
+  if (mysteryModes.includes(store.currentMode as any)) {
+      sounds.playMusic('mystery');
+  } else if (actionModes.includes(store.currentMode as any)) {
+      sounds.playMusic('action');
+  } else {
+      sounds.playMusic('calm');
+  }
+}
 
 watch(() => store.currentTheme, () => {
   updateTheme();

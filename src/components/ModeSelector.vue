@@ -28,8 +28,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { MODE_CONFIGS, GameMode, type GameModeValue } from '../types/modes';
-import { useGameStore, GameState } from '../store/gameStore';
+import { MODE_CONFIGS, type GameModeValue } from '../types/modes';
+import { useGameStore } from '../store/gameStore';
 import { translations } from '../utils/i18n';
 
 const store = useGameStore();
@@ -47,18 +47,12 @@ const filteredModes = computed(() => {
     return MODE_CONFIGS;
 });
 
-defineEmits(['close']);
+const emit = defineEmits(['close']);
 
 function selectMode(modeId: string) {  
   store.currentMode = modeId as GameModeValue;
-  store.gameState = GameState.PLAYING;
-  
-  // Only start game engine display for Anomaly Hunt immediately? 
-  // Actually most modes handle their own start now via onMounted or their own init.
-  // Anomaly Hunt needs explicit start from store.
-  if (modeId === GameMode.ANOMALY_HUNT) {
-    store.startGame();
-  }
+  store.startGame();
+  emit('close');
 }
 </script>
 
