@@ -115,7 +115,7 @@ export class SequenceGenerator {
         };
     }
 
-    private generateSymbolicSequence(difficulty: number): SequenceChallenge {
+    private generateSymbolicSequence(_difficulty: number): SequenceChallenge {
         // Logic operations: AND, OR concepts depicted by combined symbols?
         // Or simple rotation
         const base = ['⬆️', '↗️', '➡️', '↘️', '⬇️', '↙️', '⬅️', '↖️'];

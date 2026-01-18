@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { useGameStore } from '../store/gameStore';
-import { translations, type Language } from '../utils/i18n';
+import { translations } from '../utils/i18n';
 
 const store = useGameStore();
 defineEmits(['close']);
