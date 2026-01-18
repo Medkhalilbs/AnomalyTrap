@@ -1,6 +1,7 @@
 <template>
   <div class="main-menu">
     <div class="title-container">
+      <img src="../assets/hero.png" alt="Anomaly Trap Hero" class="hero-image" />
       <h1 class="game-title">ANOMALY<span>TRAP</span></h1>
     </div>
 
@@ -121,6 +122,21 @@ function t(key: keyof typeof translations['en']) {
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
+}
+
+.hero-image {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
+  border-radius: 20%;
+  box-shadow: 0 0 30px rgba(52, 152, 219, 0.4);
+  animation: pulseHero 4s ease-in-out infinite;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes pulseHero {
+  0%, 100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 30px rgba(52, 152, 219, 0.4); }
+  50% { transform: scale(1.05) rotate(2deg); box-shadow: 0 0 50px rgba(52, 152, 219, 0.6); }
 }
 
 .game-title {

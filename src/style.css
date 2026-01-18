@@ -23,6 +23,12 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Prevent blue highlight on tap in mobile */
+  -webkit-tap-highlight-color: transparent;
+
+  /* Smooth scrolling for mobile */
+  scroll-behavior: smooth;
 }
 
 body {
@@ -40,6 +46,7 @@ body {
   user-select: none;
   /* Prevent text selection in game */
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 #app {

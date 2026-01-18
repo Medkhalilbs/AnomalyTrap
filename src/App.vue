@@ -44,14 +44,13 @@ import { useGameStore, GameState } from './store/gameStore';
 import { GameMode } from './types/modes';
 import { sounds } from './utils/sounds';
 import { adService } from './utils/adService';
-
-onMounted(() => {
-  adService.initialize();
-});
+import { haptics } from './utils/haptics';
 
 const store = useGameStore();
 
 onMounted(() => {
+  adService.initialize();
+  haptics.initialize();
   store.initGame();
   updateTheme();
 });

@@ -1,4 +1,6 @@
 import suspenseMusic from '../assets/suspense.mp3';
+import { haptics } from './haptics';
+import { ImpactStyle, NotificationType } from '@capacitor/haptics';
 
 class SoundManager {
     private ctx: AudioContext | null = null;
@@ -19,6 +21,7 @@ class SoundManager {
         this.init();
         if (!this.ctx) return;
         this.playOscillator(440, 0.1, 'sine');
+        haptics.impact(ImpactStyle.Light);
     }
 
     playSuccess() {
@@ -26,18 +29,21 @@ class SoundManager {
         if (!this.ctx) return;
         this.playOscillator(660, 0.2, 'sine');
         setTimeout(() => this.playOscillator(880, 0.2, 'sine'), 50);
+        haptics.notification(NotificationType.Success);
     }
 
     playError() {
         this.init();
         if (!this.ctx) return;
         this.playOscillator(220, 0.3, 'sawtooth');
+        haptics.notification(NotificationType.Error);
     }
 
     playMenuClick() {
         this.init();
         if (!this.ctx) return;
         this.playOscillator(550, 0.05, 'triangle');
+        haptics.impact(ImpactStyle.Medium);
     }
 
     stopMusic() {
