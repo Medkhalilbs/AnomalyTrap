@@ -122,6 +122,7 @@ function t(key: keyof typeof translations['en']) {
   line-height: 1;
   background: linear-gradient(135deg, #fff 0%, #bdc3c7 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }

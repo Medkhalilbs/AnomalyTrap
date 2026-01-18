@@ -162,7 +162,7 @@ onMounted(() => {
 .sequence-item {
   width: 80px;
   height: 80px;
-  background: white;
+  background: rgb(0, 0, 0);
   border: 4px solid var(--primary-color);
   border-radius: 16px;
   display: flex;
@@ -175,7 +175,7 @@ onMounted(() => {
 
 .sequence-item.question {
   background: #f1c40f;
-  color: white;
+  color: rgb(192, 14, 14);
   animation: pulse 1s infinite;
 }
 

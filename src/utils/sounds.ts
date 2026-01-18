@@ -47,7 +47,7 @@ class SoundManager {
         }
     }
 
-    playMusic(mood?: string) {
+    playMusic() {
         // We ignore the mood and play the fixed suspense track
         this.init();
         if (!this.music) return;
@@ -60,12 +60,12 @@ class SoundManager {
                     this.stopMusic();
                     return;
                 }
-            } catch (e) { }
+            } catch { }
         }
 
         // Only play if not already playing
         if (this.music.paused) {
-            this.music.play().catch(e => console.warn("Audio playback blocked by browser policy. Interaction required."));
+            this.music.play().catch(() => console.warn("Audio playback blocked by browser policy. Interaction required."));
         }
     }
 
@@ -77,7 +77,7 @@ class SoundManager {
             try {
                 const s = JSON.parse(settings);
                 if (s.sound === false) return;
-            } catch (e) { }
+            } catch { }
         }
 
         const osc = this.ctx.createOscillator();

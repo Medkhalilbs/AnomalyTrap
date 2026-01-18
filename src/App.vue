@@ -66,16 +66,7 @@ watch(() => store.currentMode, () => {
 });
 
 function handleMusicChange() {
-  const mysteryModes = [GameMode.DETECTIVE, GameMode.CONTRADICTION, GameMode.RIDDLE];
-  const actionModes = [GameMode.ANOMALY_HUNT, GameMode.CIPHER, GameMode.SEQUENCE];
-  
-  if (mysteryModes.includes(store.currentMode as any)) {
-      sounds.playMusic('mystery');
-  } else if (actionModes.includes(store.currentMode as any)) {
-      sounds.playMusic('action');
-  } else {
-      sounds.playMusic('calm');
-  }
+  sounds.playMusic();
 }
 
 watch(() => store.currentTheme, () => {

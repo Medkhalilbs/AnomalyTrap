@@ -3,8 +3,9 @@ export type Language = 'en' | 'fr' | 'ar';
 export const translations = {
     en: {
         play: "PLAY",
-        settings: "SETTINGS",
-        back: "Back",
+        settings: 'Settings',
+        chooseChallenge: 'Choose Your Challenge',
+        back: 'Back',
         score: "Score",
         level: "Level",
         bossLevel: "BOSS LEVEL",
@@ -48,8 +49,9 @@ export const translations = {
     },
     fr: {
         play: "JOUER",
-        settings: "PARAMÈTRES",
-        back: "Retour",
+        settings: 'Paramètres',
+        chooseChallenge: 'Choisissez votre défi',
+        back: 'Retour',
         score: "Score",
         level: "Niveau",
         bossLevel: "NIVEAU BOSS",
@@ -93,8 +95,9 @@ export const translations = {
     },
     ar: {
         play: "لعب",
-        settings: "إعدادات",
-        back: "رجوع",
+        settings: 'الإعدادات',
+        chooseChallenge: 'اختر تحديك',
+        back: 'رجوع',
         score: "النتيجة",
         level: "المستوى",
         bossLevel: "مستوى الزعيم",

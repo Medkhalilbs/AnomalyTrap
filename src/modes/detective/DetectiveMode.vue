@@ -8,18 +8,17 @@
       </div>
     </div>
 
-    <div class="case-container">
-      <div class="case-file">
-        <div class="file-tab">{{ t('caseFile') || 'CASE FILE' }} #{{ currentScenario.id.slice(0,4).toUpperCase() }}</div>
+    <div class="main-container">
+      <div class="case-card">
+        <div class="case-badge">{{ t('caseFile') || 'CASE' }}</div>
         
-        <div class="file-content">
-          <div class="stamp" :class="{ solved: isCorrect, failed: showResult && !isCorrect }">
-            {{ isCorrect ? 'SOLVED' : (showResult && !isCorrect ? 'FAILED' : 'OPEN') }}
+        <div class="case-content">
+          <div class="status-indicator" :class="{ solved: isCorrect, failed: showResult && !isCorrect }">
+            {{ isCorrect ? '✓ SOLVED' : (showResult && !isCorrect ? '✗ FAILED' : '● OPEN') }}
           </div>
 
-          <h2 class="story-title">{{ currentScenario.title }}</h2>
-          <div class="divider"></div>
-          <p class="story-text">{{ currentScenario.story }}</p>
+          <h2 class="case-title">{{ currentScenario.title }}</h2>
+          <p class="case-story">{{ currentScenario.story }}</p>
         </div>
       </div>
 
@@ -43,21 +42,20 @@
               <h3 class="suspect-name">{{ suspect.name }}</h3>
             </div>
             
-            <div class="suspect-details">
-              <div class="info-block">
-                <span class="info-label">{{ t('alibi') || 'ALIBI' }}:</span>
+            <div class="suspect-info">
+              <div class="info-row">
+                <span class="info-label">{{ t('alibi') || 'ALIBI' }}</span>
                 <p class="info-text">{{ suspect.alibi }}</p>
               </div>
-              <div class="info-block">
-                <span class="info-label">{{ t('statement') || 'STATEMENT' }}:</span>
+              <div class="info-row">
+                <span class="info-label">{{ t('statement') || 'STATEMENT' }}</span>
                 <p class="info-text">{{ suspect.statement }}</p>
               </div>
             </div>
 
-            <div class="selection-indicator">
-              <span v-if="selectedSuspect === suspect.id && !showResult">SELECTED</span>
-              <span v-if="showResult && suspect.isCulprit">TARGET</span>
-              <span v-if="showResult && selectedSuspect === suspect.id && !suspect.isCulprit">WRONG</span>
+            <div class="card-status" v-if="showResult">
+              <span v-if="suspect.isCulprit">TARGET</span>
+              <span v-else-if="selectedSuspect === suspect.id">WRONG</span>
             </div>
           </div>
         </div>
@@ -65,12 +63,12 @@
     </div>
 
     <Transition name="fade">
-      <div class="feedback-overlay" v-if="showResult">
-        <div class="feedback-content" :class="{ 'success': isCorrect, 'error': !isCorrect }">
-          <div class="feedback-icon">{{ isCorrect ? '🏆' : '👮' }}</div>
+      <div class="result-overlay" v-if="showResult">
+        <div class="result-box" :class="{ 'success': isCorrect, 'error': !isCorrect }">
+          <div class="result-icon">{{ isCorrect ? '🏆' : '👮' }}</div>
           <h2>{{ isCorrect ? t('caseClosed') : t('wrongSuspect') }}</h2>
-          <p v-if="!isCorrect">{{ t('realCulpritEscaped') }}</p>
-          <button class="next-btn" @click="nextLevel">
+          <p v-if="!isCorrect" class="result-subtext">{{ t('realCulpritEscaped') }}</p>
+          <button class="action-btn" @click="nextLevel">
             {{ isCorrect ? t('nextCase') : t('tryAgain') }}
           </button>
         </div>
@@ -144,29 +142,34 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   padding: 20px;
-  background: #fdf6e3;
-  color: #2c3e50;
+  background: var(--bg-color);
+  color: var(--secondary-color);
   overflow-y: auto;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .mode-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto 30px;
 }
 
 .back-btn {
-  background: #fff;
-  border: 2px solid #333;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  font-size: 1.5rem;
+  background: white;
+  border: 4px solid var(--secondary-color);
+  border-radius: 12px;
+  padding: 10px 15px;
+  font-size: 1.2rem;
   cursor: pointer;
-  box-shadow: 2px 2px 0 #333;
+  transition: all 0.2s;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0,0,0,0.1);
 }
 
 .score-display {
@@ -176,127 +179,110 @@ onMounted(() => {
 }
 
 .score-display .label {
-  font-size: 0.8rem;
-  font-weight: bold;
-  opacity: 0.6;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  letter-spacing: 1px;
 }
 
 .score-display .value {
-  font-size: 2rem;
-  font-weight: 900;
-  color: #2c3e50;
+  font-size: 2.5rem;
+  font-weight: 950;
+  line-height: 1;
 }
 
-.case-container {
-  max-width: 800px;
+.main-container {
+  max-width: 900px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 30px;
 }
 
-.case-file {
-  background: #fff;
-  border: 1px solid #d3c6a3;
-  box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+.case-card {
+  background: white;
+  border: 4px solid var(--primary-color);
+  border-radius: 20px;
+  padding: 30px;
   position: relative;
-  padding-top: 30px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.05);
 }
 
-.file-tab {
+.case-badge {
   position: absolute;
-  top: -30px;
-  left: 0;
-  background: #d3c6a3;
+  top: -15px;
+  left: 30px;
+  background: var(--primary-color);
+  color: white;
   padding: 5px 20px;
-  font-weight: bold;
-  font-size: 0.9rem;
-  clip-path: polygon(0% 0%, 80% 0%, 100% 100%, 0% 100%);
-}
-
-.file-content {
-  padding: 40px;
-  position: relative;
-}
-
-.stamp {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  border: 4px solid #333;
-  padding: 5px 15px;
-  font-size: 1.5rem;
+  border-radius: 8px;
   font-weight: 900;
-  transform: rotate(15deg);
-  opacity: 0.2;
+  font-size: 0.8rem;
+  text-transform: uppercase;
 }
 
-.stamp.solved {
-  border-color: #2ecc71;
-  color: #2ecc71;
-  opacity: 0.8;
+.status-indicator {
+  font-weight: 900;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #f0f0f0;
 }
 
-.stamp.failed {
-  border-color: #e74c3c;
-  color: #e74c3c;
-  opacity: 0.8;
+.status-indicator.solved { color: #2ecc71; background: #e8f8f5; }
+.status-indicator.failed { color: #e74c3c; background: #fdedec; }
+
+.case-title {
+  font-size: 2rem;
+  font-weight: 900;
+  margin-bottom: 15px;
 }
 
-.story-title {
-  font-size: 1.8rem;
-  margin-top: 0;
-  margin-bottom: 20px;
-}
-
-.divider {
-  height: 2px;
-  background: #eee;
-  margin: 20px 0;
-}
-
-.story-text {
+.case-story {
   font-size: 1.2rem;
   line-height: 1.6;
-  white-space: pre-wrap;
+  opacity: 0.9;
 }
 
 .section-title {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
+  font-weight: 900;
   margin-bottom: 20px;
-  border-bottom: 2px solid #333;
-  padding-bottom: 10px;
+  color: var(--secondary-color);
 }
 
 .suspects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
-  padding-bottom: 40px;
+  padding-bottom: 50px;
 }
 
 .suspect-card {
-  background: #fff;
-  border: 2px solid #eee;
-  padding: 20px;
-  border-radius: 8px;
+  background: white;
+  border: 4px solid #eee;
+  padding: 24px;
+  border-radius: 20px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
   position: relative;
 }
 
 .suspect-card:hover:not(.showResult) {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  border-color: #333;
+  transform: translateY(-8px);
+  border-color: var(--primary-color);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
 }
 
 .suspect-card.selected {
-  border-color: #333;
-  background: #f9f9f9;
+  border-color: var(--primary-color);
+  background: rgba(var(--primary-rgb), 0.05);
 }
 
 .suspect-card.correct {
@@ -309,15 +295,6 @@ onMounted(() => {
   border-color: #e74c3c;
 }
 
-.suspect-card.reveal-correct {
-  animation: pulse-correct 1s infinite alternate;
-}
-
-@keyframes pulse-correct {
-  from { border-color: #2ecc71; box-shadow: 0 0 0 transparent; }
-  to { border-color: #2ecc71; box-shadow: 0 0 15px rgba(46,204,113,0.5); }
-}
-
 .suspect-header {
   display: flex;
   align-items: center;
@@ -325,94 +302,123 @@ onMounted(() => {
 }
 
 .suspect-avatar {
-  font-size: 2.5rem;
-  background: #eee;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  font-size: 2rem;
+  background: var(--bg-color);
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid #eee;
 }
 
 .suspect-name {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  font-weight: 900;
   margin: 0;
 }
 
-.suspect-details {
+.suspect-info {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
-.info-block {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .info-label {
-  font-size: 0.7rem;
-  font-weight: 800;
-  opacity: 0.5;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .info-text {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
-.selection-indicator {
-    position: absolute;
-    bottom: 10px;
-    right: 15px;
-    font-size: 0.6rem;
-    font-weight: bold;
-    opacity: 0.5;
+.card-status {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.05);
 }
 
-.feedback-overlay {
+.result-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(5px);
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 20px;
 }
 
-.feedback-content {
-  background: #fff;
+.result-box {
+  background: white;
   padding: 40px;
-  border-radius: 4px;
+  border-radius: 30px;
   text-align: center;
-  max-width: 400px;
-  width: 90%;
-  border: 2px solid #333;
-  box-shadow: 10px 10px 0 #333;
+  max-width: 450px;
+  width: 100%;
+  border: 4px solid var(--secondary-color);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
 }
 
-.feedback-icon {
-  font-size: 4rem;
+.result-icon {
+  font-size: 5rem;
   margin-bottom: 20px;
 }
 
-.next-btn {
-  background: #333;
-  color: #fff;
+.result-box h2 {
+  font-size: 2rem;
+  font-weight: 950;
+  margin-bottom: 10px;
+}
+
+.result-subtext {
+  font-size: 1.1rem;
+  opacity: 0.7;
+  margin-bottom: 30px;
+}
+
+.action-btn {
+  background: var(--primary-color);
+  color: white;
   border: none;
-  padding: 15px 30px;
-  font-size: 1.2rem;
-  font-weight: bold;
+  border-bottom: 6px solid rgba(0,0,0,0.2);
+  padding: 18px 36px;
+  font-size: 1.3rem;
+  font-weight: 900;
+  border-radius: 16px;
   cursor: pointer;
-  margin-top: 20px;
+  transition: all 0.2s;
   width: 100%;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.action-btn:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -423,13 +429,13 @@ onMounted(() => {
 }
 
 @media (max-width: 600px) {
-  .file-content {
+  .case-card {
     padding: 20px;
   }
-  .story-title {
-    font-size: 1.4rem;
+  .case-title {
+    font-size: 1.5rem;
   }
-  .story-text {
+  .case-story {
     font-size: 1rem;
   }
   .suspects-grid {
