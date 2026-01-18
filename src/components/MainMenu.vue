@@ -51,17 +51,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useGameStore } from '../store/gameStore';
 import TutorialOverlay from './TutorialOverlay.vue';
 import ModeSelector from './ModeSelector.vue';
 import SettingsMenu from './SettingsMenu.vue';
 import { translations } from '../utils/i18n';
+import { adService } from '../utils/adService';
 
 const store = useGameStore();
 const showTutorial = ref(false);
 const showModeSelector = ref(false);
 const showSettings = ref(false);
+
+onMounted(() => {
+    adService.showBanner();
+});
+
+onUnmounted(() => {
+    adService.hideBanner();
+});
 
 function t(key: keyof typeof translations['en']) {
     return translations[store.language][key];

@@ -43,6 +43,11 @@ import ContradictionMode from './modes/contradiction/ContradictionMode.vue';
 import { useGameStore, GameState } from './store/gameStore';
 import { GameMode } from './types/modes';
 import { sounds } from './utils/sounds';
+import { adService } from './utils/adService';
+
+onMounted(() => {
+  adService.initialize();
+});
 
 const store = useGameStore();
 

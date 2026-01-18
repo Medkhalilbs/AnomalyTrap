@@ -6,7 +6,13 @@ const config: CapacitorConfig = {
     webDir: 'dist',
     server: {
         androidScheme: 'https'
-    }
+    },
+    plugins: {
+        AdMob: {
+            androidAppId: 'ca-app-pub-3940256099942544~3347511713',
+            requestTrackingAuthorization: true,
+        },
+    },
 };
 
 export default config;

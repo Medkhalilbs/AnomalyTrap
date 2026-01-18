@@ -27,9 +27,15 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { useGameStore } from '../store/gameStore';
+import { adService } from '../utils/adService';
 
 const store = useGameStore();
+
+onMounted(() => {
+    adService.showInterstitial();
+});
 
 defineProps<{
   score: number;
